@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>NAKAOKA B2B ORDER</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            red: "#D32F2F",
+                            black: "#333333",
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Noto Sans JP"', "sans-serif"],
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            background-color: #f8fafc;
+        }
+
+        .glass-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+        }
+
+        .spinner {
+            border: 3px solid rgba(226, 232, 240, 0.3);
+            border-left-color: #D32F2F;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Mobile optimization */
+        input,
+        select,
+        textarea {
+            font-size: 16px !important;
+        }
+
+        /* Prevent zoom on iOS */
+        html,
+        body {
+            overflow-x: hidden;
+            width: 100%;
+        }
+
+        /* WordPress Theme Overrides - Hide Footer & Header */
+        .wp-site-blocks>footer,
+        .wp-block-template-part,
+        footer[class*="wp-block-"],
+        .site-footer,
+        #colophon {
+            display: none !important;
+        }
+
+        /* Ensure app takes full width */
+        .entry-content,
+        .wp-block-post-content {
+            max-width: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+    </style>
+</head>
+
+<body class="text-slate-800">
+
+    <div id="nakaoka-app-overlay" class="bg-slate-50 min-h-screen">
+        <div class="max-w-5xl mx-auto min-h-screen relative pb-48">
+
+            <!-- Header -->
+            <header
+                class="glass-header sticky top-0 z-[100] px-4 py-3 flex justify-between items-center transition-all duration-300">
+                <!-- User Info (Left Side) -->
+                <div class="flex flex-col shrink-0 max-w-[40%]">
+                    <div id="user-salon-display" class="text-xs font-bold text-slate-900 truncate"></div>
+                    <div id="user-name-display" class="text-[10px] text-slate-500 truncate"></div>
+                </div>
+
+                <!-- Navigation Buttons (Right Side - Text Based) -->
+                <div id="user-nav" class="hidden flex items-center gap-2 shrink-0">
+                    <button onclick="showOrderHistory()"
+                        class="text-[10px] sm:text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 px-2 py-2 rounded transition whitespace-nowrap">
+                        購入履歴
+                    </button>
+                    <button onclick="showProfileEdit()"
+                        class="text-[10px] sm:text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 px-2 py-2 rounded transition whitespace-nowrap">
+                        情報変更
+                    </button>
+                    <button onclick="logout()"
+                        class="text-[10px] sm:text-xs font-bold text-slate-500 hover:text-brand-red px-1 py-2 transition underline decoration-slate-300 underline-offset-4 whitespace-nowrap">
+                        ログアウト
+                    </button>
+                </div>
+            </header>
+
+            <!-- Loading Overlay -->
+            <div id="loading"
+                class="fixed inset-0 bg-white/90 z-[9999] flex flex-col items-center justify-center transition-opacity duration-300"
+                style="display: none;">
+                <div class="spinner mb-4"></div>
+                <p class="text-brand-red text-xs font-bold tracking-widest animate-pulse">PROCESSING</p>
+            </div>
+
+            <!-- AUTH SCREEN -->
+            <div id="auth-screen" class="p-4 sm:p-8 max-w-md mx-auto mt-10 sm:mt-20">
+                <!-- Login View -->
+                <div id="login-view" class="bg-white p-8 rounded-xl border border-slate-200 shadow-xl">
+                    <h2 class="text-xl font-bold text-center mb-8 text-slate-900 tracking-wider">MEMBER LOGIN</h2>
+                    <form onsubmit="handleLogin(event)" class="space-y-5">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 mb-1">メールアドレス</label>
+                            <input type="email" id="login-email" required
+                                class="w-full bg-slate-50 border border-slate-200 p-3 rounded-lg focus:border-brand-red focus:bg-white focus:ring-1 focus:ring-brand-red outline-none transition text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 mb-1">パスワード</label>
+                            <input type="password" id="login-password" required
+                                class="w-full bg-slate-50 border border-slate-200 p-3 rounded-lg focus:border-brand-red focus:bg-white focus:ring-1 focus:ring-brand-red outline-none transition text-sm">
+                        </div>
+                        <button type="submit"
+                            class="w-full bg-slate-900 text-white font-bold py-4 rounded-lg hover:bg-brand-red transition-colors duration-300 shadow-lg shadow-slate-200 text-sm tracking-wide">ログイン</button>
+                    </form>
+                    <div class="mt-8">
+                        <div class="bg-gray-50 p-5 rounded-xl border border-gray-200 text-center">
+                            <h3 class="text-sm font-bold text-slate-700 mb-2">新規会員登録</h3>
+                            <p class="text-[10px] text-slate-400 mb-4">アカウントをお持ちでない方はこちら</p>
+                            <button onclick="showRegister()"
+                                class="w-full bg-white text-brand-red border border-brand-red font-bold py-3 rounded-lg hover:bg-brand-red hover:text-white transition-all duration-300 shadow-sm text-sm">新規登録する</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Register View -->
+                <div id="register-view" class="bg-white p-8 rounded-xl border border-slate-200 shadow-xl"
+                    style="display: none;">
+                    <h2 class="text-xl font-bold text-center mb-2 text-slate-900 tracking-wider">NEW ACCOUNT</h2>
+                    <p class="text-xs text-center text-slate-400 mb-8">ご登録情報を入力してください</p>
+                    <form onsubmit="handleRegister(event)" class="space-y-4">
+                        <div><label class="block text-[10px] font-bold text-slate-400">お名前 <span
+                                    class="text-red-400">*</span></label><input type="text" name="name" required
+                                class="w-full border-b border-slate-200 py-2 outline-none focus:border-brand-red transition text-sm">
+                        </div>
+                        <div><label class="block text-[10px] font-bold text-slate-400">サロン名 <span
+                                    class="text-red-400">*</span></label><input type="text" name="salon" required
+                                class="w-full border-b border-slate-200 py-2 outline-none focus:border-brand-red transition text-sm">
+                        </div>
+                        <div><label class="block text-[10px] font-bold text-slate-400">役職</label><input type="text"
+                                name="position"
+                                class="w-full border-b border-slate-200 py-2 outline-none focus:border-brand-red transition text-sm">
+                        </div>
+                        <div><label class="block text-[10px] font-bold text-slate-400">サロン住所 <span
+                                    class="text-red-400">*</span></label><input type="text" name="address" required
+                                class="w-full border-b border-slate-200 py-2 outline-none focus:border-brand-red transition text-sm">
+                        </div>
+                        <div><label class="block text-[10px] font-bold text-slate-400">携帯番号 <span
+                                    class="text-red-400">*</span></label><input type="tel" name="mobile" required
+                                class="w-full border-b border-slate-200 py-2 outline-none focus:border-brand-red transition text-sm">
+                        </div>
+                        <div><label class="block text-[10px] font-bold text-slate-400">メールアドレス <span
+                                    class="text-red-400">*</span></label><input type="email" name="email" required
+                                class="w-full border-b border-slate-200 py-2 outline-none focus:border-brand-red transition text-sm">
+                        </div>
+                        <button type="submit"
+                            class="w-full bg-brand-red text-white font-bold py-3 mt-6 rounded-lg hover:bg-rose-800 transition shadow-lg shadow-rose-100 text-sm">登録メールを送信</button>
+                        <button type="button" onclick="showLogin()"
+                            class="w-full text-xs text-slate-400 mt-4 hover:text-slate-600">キャンセル</button>
+                    </form>
+                </div>
+
+                <!-- Setup View -->
+                <div id="setup-view" class="bg-white p-8 rounded-xl border border-slate-200 shadow-xl"
+                    style="display: none;">
+                    <h2 class="text-xl font-bold text-center mb-8 text-slate-900 tracking-wider">PASSWORD SETUP</h2>
+                    <form onsubmit="handleSetup(event)" class="space-y-6">
+                        <input type="hidden" id="setup-token">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 mb-1">新しいパスワード</label>
+                            <input type="password" id="setup-pass" required minlength="6"
+                                class="w-full bg-slate-50 border border-slate-200 p-3 rounded-lg focus:border-brand-red focus:bg-white outline-none transition text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 mb-1">パスワード（確認用）</label>
+                            <input type="password" id="setup-pass-confirm" required minlength="6"
+                                class="w-full bg-slate-50 border border-slate-200 p-3 rounded-lg focus:border-brand-red focus:bg-white outline-none transition text-sm">
+                        </div>
+                        <button type="submit"
+                            class="w-full bg-slate-900 text-white font-bold py-4 rounded-lg hover:bg-slate-700 transition shadow-lg text-sm">設定を完了する</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- PROFILE EDIT VIEW -->
+            <div id="profile-edit-view" class="p-4 sm:p-8 max-w-md mx-auto mt-10" style="display: none;">
+                <div class="bg-white p-8 rounded-xl shadow-soft">
+                    <h2 class="text-xl font-bold text-center mb-8 text-slate-900 tracking-wider">EDIT PROFILE</h2>
+                    <form onsubmit="handleUpdateProfile(event)" class="space-y-4">
+                        <div><label class="block text-[10px] font-bold text-slate-400">お名前</label><input type="text"
+                                id="edit-name" required
+                                class="w-full border-b border-slate-200 py-2 outline-none focus:border-brand-red transition text-sm">
+                        </div>
+                        <div><label class="block text-[10px] font-bold text-slate-400">サロン名</label><input type="text"
+                                id="edit-salon" required
+                                class="w-full border-b border-slate-200 py-2 outline-none focus:border-brand-red transition text-sm">
+                        </div>
+                        <div><label class="block text-[10px] font-bold text-slate-400">役職</label><input type="text"
+                                id="edit-position"
+                                class="w-full border-b border-slate-200 py-2 outline-none focus:border-brand-red transition text-sm">
+                        </div>
+                        <div><label class="block text-[10px] font-bold text-slate-400">サロン住所</label><input type="text"
+                                id="edit-address" required
+                                class="w-full border-b border-slate-200 py-2 outline-none focus:border-brand-red transition text-sm">
+                        </div>
+                        <div><label class="block text-[10px] font-bold text-slate-400">携帯番号</label><input type="tel"
+                                id="edit-mobile" required
+                                class="w-full border-b border-slate-200 py-2 outline-none focus:border-brand-red transition text-sm">
+                        </div>
+                        <div class="pt-2"><label class="block text-[10px] font-bold text-slate-300">メールアドレス
+                                (変更不可)</label>
+                            <div id="edit-email-display" class="text-sm text-slate-500 py-1"></div>
+                        </div>
+                        <button type="submit"
+                            class="w-full bg-slate-900 text-white font-bold py-3 mt-6 rounded-lg hover:bg-brand-red transition shadow-lg text-sm">変更を保存</button>
+                        <button type="button" onclick="initShop()"
+                            class="w-full text-xs text-slate-400 mt-4 hover:text-slate-600">キャンセル</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- ORDER HISTORY VIEW -->
+            <div id="order-history-view" class="p-4 sm:p-8 max-w-3xl mx-auto mt-10" style="display: none;">
+                <div class="flex items-center justify-between mb-8">
+                    <h2 class="text-2xl font-black text-slate-900 tracking-tight">ORDER HISTORY</h2>
+                    <button onclick="initShop()" class="text-sm font-bold text-slate-500 hover:text-brand-red">←
+                        お買い物に戻る</button>
+                </div>
+                <div id="order-history-list" class="space-y-6"></div>
+            </div>
+
+            <!-- SHOP SCREEN (Protected) -->
+            <div id="shop-screen" style="display: none;">
+                <!-- Product List -->
+                <div class="p-4 sm:p-8">
+                    <div class="flex items-end justify-between mb-6">
+                        <h2 class="text-2xl font-black text-slate-900 tracking-tight">PRODUCTS</h2>
+                        <span class="text-xs text-slate-400 font-medium">全商品一覧</span>
+                    </div>
+                    <div id="product-list" class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
+                        <!-- Products injected via JS -->
+                    </div>
+                </div>
+
+                <!-- Floating Action Bar (Cart + LINE) -->
+                <div
+                    class="fixed bottom-6 left-1/2 transform -translate-x-1/2 w-[95%] max-w-lg z-40 flex flex-col gap-3 items-center md:left-auto md:right-6 md:translate-x-0 md:w-auto md:items-end md:bottom-8">
+                    <!-- LINE Inquiry Button -->
+                    <a href="https://line.me/R/ti/p/@nakaoka" target="_blank"
+                        class="bg-[#06C755] text-white px-6 py-3 rounded-full shadow-lg flex items-center justify-center gap-2 w-full md:w-auto hover:opacity-90 transition mb-2">
+                        <span class="material-icons-outlined text-xl">chat</span>
+                        <span class="font-bold text-sm">LINEで問い合わせる</span>
+                    </a>
+
+                    <!-- Cart Button -->
+                    <button onclick="showCheckout()" id="cart-fab"
+                        class="bg-slate-900 text-white px-6 py-4 rounded-full shadow-2xl flex items-center justify-between w-full md:w-auto md:gap-6 transform hover:scale-105 transition-all duration-300 cursor-pointer hidden">
+                        <div class="flex items-center gap-3">
+                            <div class="bg-white text-slate-900 w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm"
+                                id="cart-count">0</div>
+                            <span class="font-bold tracking-wide text-sm">カートを確認</span>
+                        </div>
+                        <span class="font-bold text-lg" id="cart-total">¥0</span>
+                    </button>
+                </div>
+
+                <!-- Checkout Modal -->
+                <div id="checkout-modal"
+                    class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm"
+                    style="display: none;">
+                    <div
+                        class="bg-white w-full max-w-lg rounded-xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
+                        <div class="p-6 bg-slate-900 text-white flex justify-between items-center">
+                            <h3 class="font-bold tracking-wider">CONFIRM ORDER</h3>
+                            <button onclick="hideCheckout()" class="text-slate-400 hover:text-white"><span
+                                    class="material-icons-outlined">close</span></button>
+                        </div>
+                        <div class="p-6 overflow-y-auto flex-1 bg-slate-50">
+                            <div id="cart-items" class="space-y-4 mb-6"></div>
+                            <div class="bg-white p-4 rounded-lg border border-slate-200 mb-6">
+                                <h4 class="text-xs font-bold text-slate-400 mb-4">配送先・請求先情報</h4>
+                                <div class="grid grid-cols-2 gap-4 text-xs mb-4">
+                                    <div><span class="block text-slate-400">サロン名</span><span class="font-bold"
+                                            id="confirm-salon"></span></div>
+                                    <div><span class="block text-slate-400">お名前</span><span class="font-bold"
+                                            id="confirm-name"></span></div>
+                                    <div class="col-span-2"><span class="block text-slate-400">ご住所</span><span
+                                            class="font-bold" id="confirm-address"></span></div>
+                                </div>
+
+                                <!-- Shipping Offer -->
+                                <div id="shipping-offer"
+                                    class="bg-slate-50 p-2 rounded text-center text-xs text-slate-600 mb-4"></div>
+
+                                <!-- Shipping Rules Table -->
+                                <details class="text-[10px] text-slate-500 mb-2 cursor-pointer">
+                                    <summary class="font-bold underline mb-2">送料について</summary>
+                                    <table class="w-full text-left">
+                                        <tr class="border-b border-slate-100">
+                                            <th class="py-1">20,000円以上</th>
+                                            <td class="text-right font-bold text-brand-red">無料</td>
+                                        </tr>
+                                        <tr class="border-b border-slate-100">
+                                            <th class="py-1">15,000円〜</th>
+                                            <td class="text-right">¥2,200</td>
+                                        </tr>
+                                        <tr class="border-b border-slate-100">
+                                            <th class="py-1">10,000円〜</th>
+                                            <td class="text-right">¥1,600</td>
+                                        </tr>
+                                        <tr class="border-b border-slate-100">
+                                            <th class="py-1">5,000円〜</th>
+                                            <td class="text-right">¥1,200</td>
+                                        </tr>
+                                        <tr>
+                                            <th class="py-1">5,000円未満</th>
+                                            <td class="text-right">¥880</td>
+                                        </tr>
+                                    </table>
+                                </details>
+                            </div>
+                            <div class="space-y-2 mb-2">
+                                <div class="flex justify-between items-center text-xs text-slate-500">
+                                    <span>小計 (税込)</span>
+                                    <span class="font-bold" id="modal-subtotal">¥0</span>
+                                </div>
+                                <div class="flex justify-between items-center text-xs text-slate-500">
+                                    <span>送料</span>
+                                    <span class="font-bold" id="modal-shipping">¥0</span>
+                                </div>
+                                <div class="flex justify-between items-end border-t border-slate-100 pt-2">
+                                    <span class="text-sm font-bold text-slate-500">合計金額 (税込)</span>
+                                    <span class="text-3xl font-black text-brand-red" id="modal-total">¥0</span>
+                                </div>
+                            </div>
+                        </div>
+                        <button onclick="submitOrder()"
+                            class="w-full bg-brand-red text-white py-5 font-bold text-lg hover:bg-rose-800 transition tracking-widest flex items-center justify-center gap-2">
+                            <span class="material-icons-outlined">shopping_bag</span> 注文を確定する
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // CONFIGURATION
+        const API_URL = 'https://script.google.com/macros/s/AKfycbyTDOKNkDploqfHaOanKauDVuPXRdcpslmDwTgYkVFT_e5Weze9C66tzVM0rv5wg-g/exec';
+
+        // State
+        let products = [];
+        let cart = {};
+        let currentUser = JSON.parse(localStorage.getItem('nakaoka_user')) || null;
+
+        // Initialization
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const mode = urlParams.get('mode');
+            const token = urlParams.get('token');
+
+            if (mode === 'setup' && token) {
+                showSetup(token);
+            } else if (mode === 'register') {
+                showRegister();
+            } else if (currentUser) {
+                initShop();
+            } else {
+                showLogin();
+            }
+        });
+
+        // View Switching
+        function showLogin() {
+            hideAll();
+            document.getElementById('auth-screen').style.display = 'block';
+            document.getElementById('login-view').style.display = 'block';
+        }
+        function showRegister() {
+            hideAll();
+            document.getElementById('auth-screen').style.display = 'block';
+            document.getElementById('register-view').style.display = 'block';
+        }
+        function showSetup(token) {
+            hideAll();
+            document.getElementById('auth-screen').style.display = 'block';
+            document.getElementById('setup-view').style.display = 'block';
+            document.getElementById('setup-token').value = token;
+        }
+        function showProfileEdit() {
+            if (!currentUser) return;
+            hideAll();
+            document.getElementById('user-nav').style.display = 'flex';
+            document.getElementById('profile-edit-view').style.display = 'block';
+            document.getElementById('edit-name').value = currentUser.name;
+            document.getElementById('edit-salon').value = currentUser.salon;
+            document.getElementById('edit-position').value = currentUser.position;
+            document.getElementById('edit-address').value = currentUser.address;
+            document.getElementById('edit-mobile').value = currentUser.mobile;
+            document.getElementById('edit-email-display').textContent = currentUser.email;
+        }
+        function showOrderHistory() {
+            if (!currentUser) return;
+            hideAll();
+            document.getElementById('user-nav').style.display = 'flex';
+            document.getElementById('order-history-view').style.display = 'block';
+            fetchOrderHistory();
+        }
+        function hideAll() {
+            const ids = ['auth-screen', 'login-view', 'register-view', 'setup-view', 'shop-screen', 'profile-edit-view', 'order-history-view', 'user-nav'];
+            ids.forEach(id => document.getElementById(id).style.display = 'none');
+        }
+        function logout() {
+            if (confirm('ログアウトしますか？')) {
+                localStorage.removeItem('nakaoka_user');
+                currentUser = null;
+                cart = {};
+                showLogin();
+            }
+        }
+
+        function showLoading(show) { document.getElementById('loading').style.display = show ? 'flex' : 'none'; }
+
+        // Auth Actions
+        async function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+
+            console.log('Logging in with:', email);
+            showLoading(true);
+            try {
+                const res = await fetch(API_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'login', email, password })
+                }).then(r => r.json());
+
+                console.log('Login Response:', res);
+
+                if (res.status === 'success') {
+                    currentUser = res.user;
+                    localStorage.setItem('nakaoka_user', JSON.stringify(currentUser));
+                    await initShop(); // Await added
+                } else {
+                    alert(res.message);
+                }
+            } catch (err) {
+                console.error('Login Error:', err);
+                alert('通信エラーが発生しました: ' + err.toString());
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        async function handleRegister(e) {
+            e.preventDefault();
+            const fd = new FormData(e.target);
+            const data = Object.fromEntries(fd.entries());
+            data.action = 'register';
+            showLoading(true);
+            try {
+                const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(data) }).then(r => r.json());
+                alert(res.message);
+                if (res.status === 'success') showLogin();
+            } catch (err) { alert('通信エラー: ' + err.toString()); }
+            showLoading(false);
+        }
+
+        async function handleSetup(e) {
+            e.preventDefault();
+            const password = document.getElementById('setup-pass').value;
+            const confirm = document.getElementById('setup-pass-confirm').value;
+            const token = document.getElementById('setup-token').value;
+            if (password !== confirm) return alert('パスワードが一致しません');
+            showLoading(true);
+            try {
+                const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'setup_password', token, password }) }).then(r => r.json());
+                alert(res.message);
+                if (res.status === 'success') showLogin();
+            } catch (err) { alert('通信エラー: ' + err.toString()); }
+            showLoading(false);
+        }
+
+        async function handleUpdateProfile(e) {
+            e.preventDefault();
+            const data = {
+                action: 'update_profile',
+                id: currentUser.id,
+                email: currentUser.email, // Key
+                name: document.getElementById('edit-name').value,
+                salon: document.getElementById('edit-salon').value,
+                position: document.getElementById('edit-position').value,
+                address: document.getElementById('edit-address').value,
+                mobile: document.getElementById('edit-mobile').value
+            };
+            showLoading(true);
+            try {
+                const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(data) }).then(r => r.json());
+                if (res.status === 'success') {
+                    currentUser = res.user;
+                    localStorage.setItem('nakaoka_user', JSON.stringify(currentUser));
+                    alert('情報を更新しました');
+                    initShop();
+                } else {
+                    alert(res.message);
+                }
+            } catch (err) { alert('通信エラー: ' + err.toString()); }
+            showLoading(false);
+        }
+
+
+        // Shop Logic
+        async function initShop() {
+            hideAll();
+            document.getElementById('shop-screen').style.display = 'block';
+            document.getElementById('user-nav').style.display = 'flex';
+
+            if (currentUser) {
+                document.getElementById('user-salon-display').textContent = currentUser.salon;
+                document.getElementById('user-name-display').textContent = currentUser.name + " 様";
+                document.getElementById('confirm-salon').textContent = currentUser.salon;
+                document.getElementById('confirm-name').textContent = currentUser.name;
+                document.getElementById('confirm-address').textContent = currentUser.address;
+            }
+
+            if (products.length === 0) {
+                showLoading(true);
+                try {
+                    const response = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'get_products' }) });
+                    const res = await response.json();
+                    if (res.status === 'success') {
+                        products = res.products;
+                        renderProducts();
+                    } else {
+                        alert('商品データの取得に失敗しました: ' + res.message);
+                    }
+                } catch (err) {
+                    console.error(err);
+                    alert('通信エラー: ' + err.toString());
+                } finally {
+                    showLoading(false);
+                }
+            } else {
+                renderProducts();
+            }
+        }
+
+        function renderProducts() {
+            const container = document.getElementById('product-list');
+            if (products.length === 0) {
+                container.innerHTML = '<p class="col-span-3 text-center text-slate-400 py-10">商品が見つかりませんでした。<br>スプレッドシートの「商品管理」シートを確認してください。</p>';
+                return;
+            }
+
+            container.innerHTML = products.map((p, index) => {
+                const categoryHtml = p.category
+                    ? `<span class="absolute top-2 left-2 bg-slate-900/80 text-[8px] md:text-[10px] text-white px-2 py-0.5 rounded-sm backdrop-blur-sm z-10 tracking-widest">${p.category}</span>`
+                    : '';
+
+                const price = parseInt(p.price);
+                const discountPrice = parseInt(p.discount_price);
+                const off = Math.round((1 - discountPrice / price) * 100);
+
+                return `
+            <div class="bg-white rounded-lg shadow-sm border border-slate-100 overflow-hidden group flex flex-col relative w-full transform transition-all duration-300 hover:shadow-md">
+                ${categoryHtml}
+                <div class="aspect-square bg-slate-100 relative overflow-hidden">
+                    <img src="${p.image || 'https://placehold.co/400?text=No+Image'}" class="w-full h-full object-cover">
+                </div>
+                <div class="p-3 flex flex-col flex-1">
+                    <h3 class="font-bold text-xs md:text-sm text-slate-800 leading-tight mb-1 h-8 md:h-10 overflow-hidden line-clamp-2">${p.name}</h3>
+                    <div class="mt-auto">
+                        <div class="flex items-baseline gap-2 mb-1">
+                            <span class="text-[10px] text-slate-400 line-through">¥${price.toLocaleString()}</span>
+                            <span class="text-xs text-brand-red font-bold">-${off}%</span>
+                        </div>
+                        <div class="flex items-end justify-between">
+                            <span class="text-sm md:text-lg font-black text-brand-red">¥${discountPrice.toLocaleString()}</span>
+                            <div class="flex items-center gap-2">
+                                ${cart[index] ?
+                        `<div class="flex items-center bg-slate-100 rounded-full h-6 md:h-7 px-1">
+                                    <button onclick="removeFromCart(${index})" class="w-6 md:w-7 h-full flex items-center justify-center text-slate-500 font-bold hover:text-red-500">-</button>
+                                    <span class="text-xs md:text-sm font-bold w-4 text-center">${cart[index].qty}</span>
+                                    <button onclick="addToCart(${index})" class="w-6 md:w-7 h-full flex items-center justify-center text-slate-500 font-bold hover:text-green-600">+</button>
+                                </div>`
+                        :
+                        `<button onclick="addToCart(${index})" class="bg-slate-900 text-white w-6 h-6 md:w-7 md:h-7 rounded-full flex items-center justify-center hover:bg-brand-red transition shadow-lg text-[10px] md:text-xs">
+                                    <span class="material-icons-outlined text-[14px]">add</span>
+                                </button>`
+                    }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            `;
+            }).join('');
+        }
+
+        function addToCart(index) {
+            if (!cart[index]) {
+                cart[index] = { ...products[index], qty: 0 };
+            }
+            cart[index].qty++;
+            updateCartDisplay();
+        }
+
+        function removeFromCart(index) {
+            if (!cart[index]) return;
+            cart[index].qty--;
+            if (cart[index].qty <= 0) delete cart[index];
+            updateCartDisplay();
+        }
+
+        function updateCartDisplay() {
+            renderProducts(); // Re-render to show qty controls can toggle
+            const totalQty = Object.values(cart).reduce((sum, item) => sum + item.qty, 0);
+            const active = totalQty > 0;
+
+            const fab = document.getElementById('cart-fab');
+            fab.style.display = active ? 'flex' : 'none';
+
+            if (active) {
+                document.getElementById('cart-count').textContent = totalQty;
+                const subtotal = Object.values(cart).reduce((sum, item) => sum + (item.discount_price * item.qty), 0);
+
+                // Shipping Calculation
+                let shipping = 0;
+                if (subtotal >= 20000) shipping = 0;
+                else if (subtotal >= 15000) shipping = 2200;
+                else if (subtotal >= 10000) shipping = 1600;
+                else if (subtotal >= 5000) shipping = 1200;
+                else shipping = 880;
+
+                document.getElementById('cart-total').textContent = '¥' + (subtotal + shipping).toLocaleString();
+                document.getElementById('modal-subtotal').textContent = '¥' + subtotal.toLocaleString();
+                document.getElementById('modal-shipping').textContent = '¥' + shipping.toLocaleString();
+                document.getElementById('modal-total').textContent = '¥' + (subtotal + shipping).toLocaleString();
+
+                // Free Shipping Offer
+                const offerEl = document.getElementById('shipping-offer');
+                if (shipping === 0) {
+                    offerEl.innerHTML = '<span class="text-brand-red font-bold">🎉 送料無料です！</span>';
+                } else {
+                    const diff = 20000 - subtotal;
+                    offerEl.innerHTML = `あと <span class="text-brand-red font-bold">¥${diff.toLocaleString()}</span> で<span class="font-bold">送料無料</span>！`;
+                }
+            }
+        }
+
+        function showCheckout() {
+            const itemsDiv = document.getElementById('cart-items');
+            itemsDiv.innerHTML = Object.keys(cart).map(index => {
+                const item = cart[index];
+                return `
+            <div class="flex justify-between items-center py-3 border-b border-slate-100 last:border-0">
+                <div class="flex-1">
+                    <p class="text-xs font-bold text-slate-800 mb-1">${item.name}</p>
+                    <div class="flex items-center gap-3">
+                        <p class="text-[10px] text-brand-red font-bold">¥${item.discount_price.toLocaleString()}</p>
+                        <!-- Quantity Control in Modal -->
+                        <div class="flex items-center bg-slate-100 rounded-full h-6 px-1">
+                            <button onclick="updateModalQty('${index}', -1)" class="w-6 h-full flex items-center justify-center text-slate-500 font-bold hover:text-red-500 text-xs">-</button>
+                            <span class="text-xs font-bold w-6 text-center">${item.qty}</span>
+                            <button onclick="updateModalQty('${index}', 1)" class="w-6 h-full flex items-center justify-center text-slate-500 font-bold hover:text-green-600 text-xs">+</button>
+                        </div>
+                    </div>
+                </div>
+                <p class="font-bold text-sm">¥${(item.discount_price * item.qty).toLocaleString()}</p>
+            </div>
+        `}).join('');
+            document.getElementById('checkout-modal').style.display = 'flex';
+        }
+
+        // Wrapper for modal interaction
+        function updateModalQty(index, change) {
+            if (!cart[index]) return;
+
+            if (change > 0) {
+                cart[index].qty++;
+            } else {
+                cart[index].qty--;
+                if (cart[index].qty <= 0) delete cart[index];
+            }
+
+            updateCartDisplay(); // Update background
+
+            // If cart is empty, close modal
+            if (Object.keys(cart).length === 0) {
+                hideCheckout();
+                return;
+            }
+
+            showCheckout(); // Refresh modal content
+        }
+
+        function hideCheckout() {
+            document.getElementById('checkout-modal').style.display = 'none';
+        }
+
+        async function submitOrder() {
+            if (!currentUser) return alert('エラー：ログインしてください');
+            if (Object.keys(cart).length === 0) return alert('カートが空です');
+
+            const subtotal = Object.values(cart).reduce((sum, item) => sum + (item.discount_price * item.qty), 0);
+            let shipping = 0;
+            if (subtotal >= 20000) shipping = 0;
+            else if (subtotal >= 15000) shipping = 2200;
+            else if (subtotal >= 10000) shipping = 1600;
+            else if (subtotal >= 5000) shipping = 1200;
+            else shipping = 880;
+
+            const total = subtotal + shipping;
+
+            // Backend expects 'items' as an ARRAY 
+            const submitItems = Object.values(cart).map(i => ({
+                name: i.name,
+                qty: i.qty
+            }));
+
+            // Add shipping as an item for clarity 
+            if (shipping > 0) {
+                submitItems.push({ name: '送料', qty: 1 });
+            }
+
+            showLoading(true);
+            try {
+                const res = await fetch(API_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        action: 'place_order',
+                        user: currentUser,
+                        items: submitItems,
+                        total: total
+                    })
+                }).then(r => r.json());
+
+                if (res.status === 'success') {
+                    alert('注文が完了しました！\n\nご登録の携帯電話番号へショートメッセージ（SMS）にて決済URLをお送りします。\nお支払いの確認ができ次第、商品を発送いたします。');
+                    cart = {};
+                    updateCartDisplay();
+                    hideCheckout();
+                } else {
+                    alert('注文エラー: ' + res.message);
+                }
+            } catch (err) {
+                alert('通信エラー: ' + err.toString());
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        async function fetchOrderHistory() {
+            showLoading(true);
+            try {
+                const res = await fetch(API_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'get_order_history', email: currentUser.email })
+                }).then(r => r.json());
+
+                if (res.status === 'success') {
+                    const container = document.getElementById('order-history-list');
+                    if (res.orders.length === 0) {
+                        container.innerHTML = '<p class="text-center text-slate-400 py-10">購入履歴はありません</p>';
+                    } else {
+                        container.innerHTML = res.orders.map(order => {
+                            const date = new Date(order.date).toLocaleDateString('ja-JP');
+                            return `
+                        <div class="bg-white p-6 rounded-xl shadow-soft border border-slate-100">
+                            <div class="flex justify-between items-start mb-4 pb-4 border-b border-slate-50">
+                                <div>
+                                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1">ORDER ID: ${order.orderId.substring(0, 8)}...</p>
+                                    <p class="text-sm font-bold text-slate-800">${date}</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-xl font-black text-brand-red">¥${order.total.toLocaleString()}</p>
+                                    <span class="text-[10px] bg-slate-100 text-slate-500 px-2 py-1 rounded font-bold">${order.status}</span>
+                                </div>
+                            </div>
+                            <div class="bg-slate-50 rounded-lg p-4">
+                                <p class="text-xs text-slate-600 leading-relaxed font-medium whitespace-pre-wrap">${order.items}</p>
+                            </div>
+                        </div>`;
+                        }).join('');
+                    }
+                } else {
+                    alert('履歴の取得に失敗しました: ' + res.message);
+                }
+            } catch (err) { alert('通信エラー: ' + err.toString()); }
+            showLoading(false);
+        }
+    </script>
+</body>
+
+</html>

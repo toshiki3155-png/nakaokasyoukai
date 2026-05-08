@@ -1,0 +1,180 @@
+<!-- Company Overview Code (Nuclear Fix) -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                colors: {
+                    brand: {
+                        red: "#D32F2F",
+                        black: "#333333",
+                        gray: "#F5F5F5",
+                    }
+                },
+                fontFamily: {
+                    sans: ['"Noto Sans JP"', "sans-serif"],
+                },
+            }
+        }
+    }
+</script>
+<script>
+        (function () {
+            const targetTitle = "会社概要 | 株式会社BRABERY";
+            document.title = targetTitle;
+            new MutationObserver(() => {
+                if (document.title !== targetTitle) document.title = targetTitle;
+            }).observe(document.querySelector('title'), { childList: true });
+
+            // Nuclear Text Walker
+            function nukeToshiki() {
+                const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null, false);
+                let node;
+                while (node = walker.nextNode()) {
+                    if (node.nodeValue.match(/Toshiki/i)) node.nodeValue = node.nodeValue.replace(/Toshiki/gi, '');
+                }
+            }
+
+            document.addEventListener('DOMContentLoaded', () => {
+                const overlay = document.getElementById('brabery-overlay');
+                if (overlay) {
+                    document.body.appendChild(overlay);
+                    document.body.classList.add('brabery-active');
+                }
+                nukeToshiki();
+                new MutationObserver(nukeToshiki).observe(document.body, { childList: true, subtree: true });
+            });
+        })();
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
+
+<style>
+    body.brabery-active>*:not(#brabery-overlay):not(script):not(style) {
+        display: none !important;
+    }
+
+    body.brabery-active {
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: hidden !important;
+        background: white !important;
+    }
+
+    /* Admin Bar & Others */
+    #wpadminbar,
+    #masthead,
+    #colophon,
+    .wp-site-blocks,
+    footer,
+    .site-header,
+    .site-title {
+        display: none !important;
+    }
+
+    html {
+        margin-top: 0 !important;
+    }
+</style>
+
+<!-- オーバーレイラッパー -->
+<div id="brabery-overlay"
+    class="fixed inset-0 w-screen h-screen z-[99999] bg-white overflow-y-auto font-sans text-brand-black">
+
+    <!-- Header -->
+    <header class="fixed top-0 left-0 w-full z-50 bg-white/90 backdrop-blur-md border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <a href="/" class="flex flex-col items-start group no-underline text-brand-black">
+                <span class="text-2xl font-bold tracking-tighter group-hover:text-brand-red transition-colors">
+                    BRABERY
+                </span>
+                <span class="text-[10px] tracking-widest text-brand-red font-bold uppercase">
+                    Co., Ltd.
+                </span>
+            </a>
+
+            <nav class="hidden md:flex items-center space-x-8">
+                <a href="/"
+                    class="text-sm font-bold text-brand-black hover:text-brand-red transition-colors no-underline">HOME</a>
+                <a href="#"
+                    class="text-sm font-bold text-brand-black hover:text-brand-red transition-colors no-underline">COMPANY</a>
+                <a href="#"
+                    class="text-sm font-bold text-brand-black hover:text-brand-red transition-colors no-underline">BUSINESS</a>
+                <a href="#"
+                    class="text-sm font-bold text-brand-black hover:text-brand-red transition-colors no-underline">CONTACT</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Page Title -->
+    <section class="relative w-full h-[40vh] flex items-center justify-start bg-gray-50 pt-20">
+        <div class="max-w-7xl mx-auto px-6 w-full">
+            <h1 class="text-5xl md:text-7xl font-black text-brand-black tracking-tighter mb-4">
+                COMPANY
+            </h1>
+            <p class="text-brand-red font-bold text-sm tracking-[0.2em] uppercase">
+                会社概要
+            </p>
+        </div>
+    </section>
+
+    <!-- Content -->
+    <section class="py-20 bg-white">
+        <div class="max-w-3xl mx-auto px-6">
+
+            <!-- Greeting -->
+            <div class="mb-16">
+                <h2 class="text-2xl font-bold text-brand-black mb-8 border-l-4 border-brand-red pl-4">
+                    代表ご挨拶
+                </h2>
+                <p class="text-gray-600 leading-loose mb-6">
+                    私たちは、美と健康を通じて、人々の生活に彩りと豊かさを提供することを使命としています。<br>
+                    常にお客様の視点に立ち、信頼されるパートナーとして、共に成長し続ける企業でありたいと考えています。
+                </p>
+            </div>
+
+            <!-- Profile Table -->
+            <div>
+                <h2 class="text-2xl font-bold text-brand-black mb-8 border-l-4 border-brand-red pl-4">
+                    会社概要
+                </h2>
+                <dl class="border-t border-gray-200">
+                    <div class="grid grid-cols-1 md:grid-cols-3 py-6 border-b border-gray-100">
+                        <dt class="font-bold text-brand-black">社名</dt>
+                        <dd class="md:col-span-2 text-gray-600">株式会社BRABERY</dd>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 py-6 border-b border-gray-100">
+                        <dt class="font-bold text-brand-black">代表者</dt>
+                        <dd class="md:col-span-2 text-gray-600">代表取締役 高宮 勇美</dd>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 py-6 border-b border-gray-100">
+                        <dt class="font-bold text-brand-black">所在地</dt>
+                        <dd class="md:col-span-2 text-gray-600">
+                            大阪市北区難波中1-3-1RE-601
+                        </dd>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 py-6 border-b border-gray-100">
+                        <dt class="font-bold text-brand-black">事業内容</dt>
+                        <dd class="md:col-span-2 text-gray-600">
+                            美容商材卸売・販売 / サロンコンサルティング
+                        </dd>
+                    </div>
+                </dl>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-brand-black text-white pt-20 pb-10">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex flex-col items-start mb-6">
+                <span class="text-3xl font-bold tracking-tighter text-white">BRABERY</span>
+                <span class="text-xs tracking-widest text-brand-red font-bold uppercase">Co., Ltd.</span>
+            </div>
+            <div class="border-t border-gray-800 pt-8 mt-8">
+                <p class="text-xs text-gray-500">&copy; 2024 BRABERY Co., Ltd. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+</div>

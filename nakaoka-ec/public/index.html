@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>中岡商会 | 業務用美容商材の専門卸通販</title>
+    <meta name="description" content="中岡商会の業務用美容商材をオンラインでご注文いただけます。サロン向け卸価格・最短翌日出荷。">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Outfit:wght@300;500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="/css/ec.css">
+</head>
+
+<body>
+
+    <!-- ▼ Top Info Bar -->
+    <div class="topbar">
+        <div class="topbar-inner">
+            <ul class="topbar-links">
+                <li><a href="/guide/shipping.html">送料規定について</a></li>
+                <li><a href="/guide/delivery.html">翌営業日出荷</a></li>
+                <li><a href="/guide/first.html">はじめての方へ</a></li>
+            </ul>
+            <ul class="topbar-right">
+                <li><a href="https://b-pilot.jp" target="_blank" rel="noopener">コーポレートサイト</a></li>
+                <li><a href="/login.html" id="topbar-auth-link">新規登録・ログイン</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- ▼ Main Header -->
+    <header class="ec-header">
+        <div class="header-inner">
+            <a href="/" class="ec-logo">NAKAOKA <span>SYOUKAI</span></a>
+
+            <!-- Search Bar -->
+            <div class="header-search">
+                <input type="text" id="header-search-input" class="header-search-input" placeholder="商品名・品番で検索">
+                <button class="header-search-btn" id="header-search-btn" aria-label="検索">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Header Icons -->
+            <nav class="header-icons">
+                <a href="/mypage.html" class="icon-link" id="mypage-link" title="マイページ">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                        <circle cx="12" cy="7" r="4"/>
+                    </svg>
+                    <span class="icon-label" id="icon-user-label">ログイン</span>
+                </a>
+                <a href="/mypage.html#orders" class="icon-link" id="orders-link" title="購入履歴">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/>
+                        <rect x="9" y="3" width="6" height="4" rx="1"/>
+                        <line x1="9" y1="12" x2="15" y2="12"/>
+                        <line x1="9" y1="16" x2="13" y2="16"/>
+                    </svg>
+                    <span class="icon-label">購入履歴</span>
+                </a>
+                <button id="cart-toggle" class="icon-link cart-btn" title="カート">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="9" cy="21" r="1"/>
+                        <circle cx="20" cy="21" r="1"/>
+                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+                    </svg>
+                    <span class="icon-label">カート</span>
+                    <span id="cart-count" class="cart-badge">0</span>
+                </button>
+            </nav>
+        </div>
+
+        <!-- ▼ Category Navigation -->
+        <nav class="category-nav">
+            <div class="category-nav-inner">
+                <button class="filter-chip active" data-category="all">すべての商品</button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- ▼ 初めての方へ Banner (非ログイン時のみ表示) -->
+    <section class="firsttime-banner" id="firsttime-banner" style="display:none;">
+        <div class="firsttime-inner">
+            <div class="firsttime-text">
+                <p class="firsttime-headline">中岡商会オンラインショップは、サロン・プロ専用の美容商材卸サイトです。</p>
+                <a href="/login.html#register" class="firsttime-cta-btn">カンタン会員登録でスタート →</a>
+                <p class="firsttime-note">ご登録・年会費は全て無料！</p>
+            </div>
+            <ul class="firsttime-stats">
+                <li>
+                    <span class="stat-number">取扱商品</span>
+                    <span class="stat-label">多数ラインナップ</span>
+                </li>
+                <li>
+                    <span class="stat-number">最短翌日</span>
+                    <span class="stat-label">出荷対応</span>
+                </li>
+                <li>
+                    <span class="stat-number">送料規定</span>
+                    <span class="stat-label">ご利用ガイド</span>
+                </li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="store-value-strip" aria-label="ショップの特徴">
+        <div class="store-value-inner">
+            <div class="value-item">
+                <strong>業務専用品を厳選</strong>
+                <span>サロンワークに必要な商材をまとめて仕入れ</span>
+            </div>
+            <div class="value-item">
+                <strong>最短翌営業日出荷</strong>
+                <span>必要なタイミングで届く、実務優先の配送体制</span>
+            </div>
+            <div class="value-item">
+                <strong>LINEで注文通知</strong>
+                <span>受注後の確認をリアルタイムで効率化</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- ▼ Product Grid -->
+    <main class="product-grid-container">
+        <div id="product-grid" class="product-grid">
+            <!-- Dynamically populated -->
+        </div>
+        <div id="loading" class="loading-state">
+            <div class="spinner"></div>
+            <p>商品を読み込み中...</p>
+        </div>
+        <div id="empty-state" class="empty-state" style="display:none;">
+            <p>該当する商品がありません。</p>
+        </div>
+        <div class="load-more-wrap">
+            <button id="load-more-btn" class="load-more-btn" style="display:none;">さらに表示</button>
+        </div>
+    </main>
+
+    <!-- ▼ Cart Drawer -->
+    <div id="cart-overlay" class="cart-overlay"></div>
+    <aside id="cart-drawer" class="cart-drawer">
+        <div class="cart-header">
+            <h2>カート</h2>
+            <button id="cart-close" class="cart-close-btn">&times;</button>
+        </div>
+        <div id="cart-items" class="cart-items">
+            <!-- Dynamically populated -->
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>合計</span>
+                <span id="cart-total-price">¥0</span>
+            </div>
+            <a href="/cart.html" id="checkout-btn" class="checkout-btn">注文手続きへ</a>
+        </div>
+    </aside>
+
+    <!-- ▼ Footer -->
+    <footer class="ec-footer">
+        <div class="footer-inner">
+            <div class="footer-links">
+                <a href="/guide/first.html">はじめての方へ</a>
+                <a href="/guide/shipping.html">送料・配送について</a>
+                <a href="/login.html">会員登録・ログイン</a>
+                <a href="https://b-pilot.jp" target="_blank" rel="noopener">コーポレートサイト</a>
+            </div>
+            <p class="footer-copy">&copy; 2026 中岡商会 All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+    <script src="/js/firebase-config.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/cart.js"></script>
+    <script src="/js/app.js"></script>
+    <script>
+        // ヘッダー：ログイン状態を反映
+        Auth.onAuthChange(user => {
+            const banner = document.getElementById('firsttime-banner');
+            const label = document.getElementById('icon-user-label');
+            const topbarAuth = document.getElementById('topbar-auth-link');
+            if (user) {
+                banner.style.display = 'none';
+                if (label) label.textContent = 'マイページ';
+                if (topbarAuth) {
+                    topbarAuth.textContent = 'マイページ・ログアウト';
+                    topbarAuth.href = '/mypage.html';
+                }
+            } else {
+                banner.style.display = 'block';
+                if (topbarAuth) {
+                    topbarAuth.textContent = '新規登録・ログイン';
+                    topbarAuth.href = '/login.html';
+                }
+            }
+        });
+        // ヘッダー検索
+        document.getElementById('header-search-btn').addEventListener('click', () => {
+            const q = document.getElementById('header-search-input').value.trim();
+            if (q) window.dispatchEvent(new CustomEvent('ec:search', { detail: q }));
+        });
+        document.getElementById('header-search-input').addEventListener('keydown', e => {
+            if (e.key === 'Enter') document.getElementById('header-search-btn').click();
+        });
+    </script>
+</body>

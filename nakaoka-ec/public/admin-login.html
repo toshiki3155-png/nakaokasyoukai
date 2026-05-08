@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理者ログイン | 中岡商会</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Outfit:wght@300;500;700&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Noto Sans JP', 'Outfit', sans-serif;
+            background: #f0f2f5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        /* ロゴ */
+        .admin-logo {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .admin-logo-text {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #1a202c;
+            letter-spacing: 0.03em;
+        }
+
+        .admin-logo-text span {
+            color: #6c5ce7;
+        }
+
+        .admin-logo-sub {
+            font-size: 0.72rem;
+            color: #718096;
+            margin-top: 0.15rem;
+            letter-spacing: 0.05em;
+        }
+
+        /* カード */
+        .login-card {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+            padding: 2rem 1.5rem;
+            width: 100%;
+            max-width: 380px;
+        }
+
+        .login-card h1 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #1a202c;
+            text-align: center;
+            margin-bottom: 0.25rem;
+        }
+
+        .login-card .desc {
+            text-align: center;
+            font-size: 0.78rem;
+            color: #718096;
+            margin-bottom: 1.5rem;
+        }
+
+        /* フォーム */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #4a5568;
+            margin-bottom: 0.35rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.65rem 0.75rem;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-family: inherit;
+            color: #1a202c;
+            background: #fff;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #6c5ce7;
+            box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.1);
+        }
+
+        .form-group input::placeholder {
+            color: #a0aec0;
+        }
+
+        /* ボタン */
+        .login-btn {
+            width: 100%;
+            padding: 0.75rem;
+            background: #6c5ce7;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            transition: background 0.2s, transform 0.1s;
+            margin-top: 0.5rem;
+        }
+
+        .login-btn:hover {
+            background: #5b4cdb;
+        }
+
+        .login-btn:active {
+            transform: scale(0.99);
+        }
+
+        .login-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* エラー */
+        .login-error {
+            background: #fff5f5;
+            border: 1px solid #feb2b2;
+            color: #c53030;
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.78rem;
+            margin-bottom: 0.75rem;
+        }
+
+        /* フッターリンク */
+        .login-footer {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 0.75rem;
+            color: #a0aec0;
+        }
+
+        .login-footer a {
+            color: #6c5ce7;
+            text-decoration: none;
+        }
+
+        .login-footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 480px) {
+            .login-card {
+                padding: 1.5rem 1.25rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- ロゴ -->
+    <div class="admin-logo">
+        <div class="admin-logo-text">NAKAOKA <span>SYOUKAI</span></div>
+        <div class="admin-logo-sub">管理ダッシュボード</div>
+    </div>
+
+    <!-- ログインカード -->
+    <div class="login-card">
+        <h1>管理者ログイン</h1>
+        <p class="desc">管理者アカウントでログインしてください</p>
+
+        <form id="login-form">
+            <div class="form-group">
+                <label for="login-email">メールアドレス</label>
+                <input type="email" id="login-email" required placeholder="メールアドレスを入力" autocomplete="email">
+            </div>
+            <div class="form-group">
+                <label for="login-password">パスワード</label>
+                <input type="password" id="login-password" required placeholder="パスワードを入力" minlength="6"
+                    autocomplete="current-password">
+            </div>
+            <div id="login-error" class="login-error" style="display:none;"></div>
+            <button type="submit" class="login-btn" id="login-submit">
+                <span class="btn-text">ログイン</span>
+                <span class="btn-loading" style="display:none;">認証中...</span>
+            </button>
+        </form>
+
+        <!-- 管理者権限なし時の初期設定プロンプト -->
+        <div id="setup-prompt" style="display:none;text-align:center;padding:1rem 0;">
+            <p style="font-size:0.82rem;color:#4a5568;margin-bottom:0.75rem;">このアカウントには管理者権限がありません。</p>
+            <button id="setup-admin-btn" class="login-btn" style="background:#48bb78;">
+                <span class="btn-text">このアカウントを管理者に設定する</span>
+                <span class="btn-loading" style="display:none;">設定中...</span>
+            </button>
+            <button id="setup-cancel-btn"
+                style="margin-top:0.5rem;background:none;border:none;color:#a0aec0;font-size:0.78rem;cursor:pointer;font-family:inherit;">キャンセル（ログアウト）</button>
+        </div>
+    </div>
+
+    <!-- フッター -->
+    <div class="login-footer">
+        <a href="/">← ショップサイトに戻る</a><br>
+        <span style="margin-top:0.3rem;display:inline-block;">サロン会員の方は <a href="/login.html">会員ログイン</a> へ</span>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+    <script src="/js/firebase-config.js"></script>
+    <script src="/js/auth.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            let pendingUser = null;
+
+            // Already logged in as admin? → dashboard
+            Auth.onAuthChange(async (user) => {
+                if (user) {
+                    const doc = await db.collection('users').doc(user.uid).get();
+                    if (doc.exists && doc.data().role === 'admin') {
+                        window.location.href = '/admin.html';
+                    }
+                }
+            });
+
+            function resetBtn(btn) {
+                btn.disabled = false;
+                btn.querySelector('.btn-text').style.display = 'inline';
+                btn.querySelector('.btn-loading').style.display = 'none';
+            }
+
+            // Login
+            document.getElementById('login-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const errEl = document.getElementById('login-error');
+                errEl.style.display = 'none';
+                const btn = document.getElementById('login-submit');
+                btn.disabled = true;
+                btn.querySelector('.btn-text').style.display = 'none';
+                btn.querySelector('.btn-loading').style.display = 'inline';
+
+                try {
+                    const cred = await Auth.login(
+                        document.getElementById('login-email').value,
+                        document.getElementById('login-password').value
+                    );
+                    const doc = await db.collection('users').doc(cred.user.uid).get();
+                    if (doc.exists && doc.data().role === 'admin') {
+                        window.location.href = '/admin.html';
+                    } else {
+                        // Not admin → show setup prompt
+                        pendingUser = cred.user;
+                        document.getElementById('login-form').style.display = 'none';
+                        document.getElementById('setup-prompt').style.display = 'block';
+                    }
+                } catch (err) {
+                    const msgs = {
+                        'auth/user-not-found': 'このメールアドレスは登録されていません。',
+                        'auth/wrong-password': 'パスワードが正しくありません。',
+                        'auth/invalid-credential': 'メールアドレスまたはパスワードが正しくありません。',
+                        'auth/too-many-requests': 'ログイン試行が多すぎます。しばらくお待ちください。',
+                    };
+                    errEl.textContent = msgs[err.code] || 'ログインに失敗しました。';
+                    errEl.style.display = 'block';
+                    resetBtn(btn);
+                }
+            });
+
+            // Setup admin role
+            document.getElementById('setup-admin-btn').addEventListener('click', async () => {
+                if (!pendingUser) return;
+                const btn = document.getElementById('setup-admin-btn');
+                btn.disabled = true;
+                btn.querySelector('.btn-text').style.display = 'none';
+                btn.querySelector('.btn-loading').style.display = 'inline';
+                try {
+                    await db.collection('users').doc(pendingUser.uid).set({ role: 'admin' }, { merge: true });
+                    window.location.href = '/admin.html';
+                } catch (err) {
+                    alert('設定に失敗しました: ' + err.message);
+                    resetBtn(btn);
+                }
+            });
+
+            // Cancel → logout
+            document.getElementById('setup-cancel-btn').addEventListener('click', async () => {
+                await Auth.logout();
+                pendingUser = null;
+                document.getElementById('setup-prompt').style.display = 'none';
+                document.getElementById('login-form').style.display = 'block';
+                const btn = document.getElementById('login-submit');
+                resetBtn(btn);
+            });
+        });
+    </script>
+</body>
+
+</html>

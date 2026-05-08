@@ -1,0 +1,141 @@
+/* 
+Nakaoka Corp - Main Stylesheet 
+Strategy: Dark Navy & Gold (Authority)
+*/
+
+:root {
+    --color-navy-dark: #0a1128;
+    --color-navy-light: #1c2541;
+    --color-gold: #c5a059;
+    --color-gold-hover: #d4b06a;
+    --font-serif: "Noto Serif JP", serif;
+    --font-sans: "Noto Sans JP", sans-serif;
+}
+
+body {
+    background-color: var(--color-navy-dark);
+    color: #ffffff;
+    font-family: var(--font-sans);
+    line-height: 1.6;
+}
+
+/* Header */
+.site-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(10, 17, 40, 0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(197, 160, 89, 0.2);
+}
+
+.logo a {
+    color: #fff;
+    font-family: var(--font-serif);
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-decoration: none;
+}
+
+.main-nav ul {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+}
+
+.main-nav a {
+    color: #a0a0a0;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.3s;
+}
+
+.main-nav a:hover {
+    color: var(--color-gold);
+}
+
+/* Hero Section */
+.hero-section {
+    height: 80vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: radial-gradient(circle at center, var(--color-navy-light), var(--color-navy-dark));
+}
+
+.hero-content h1 {
+    font-family: var(--font-serif);
+    font-size: 4rem;
+    color: var(--color-gold);
+    margin-bottom: 1rem;
+}
+
+/* News Section */
+.news-section {
+    padding: 4rem 2rem;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.news-list {
+    list-style: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.news-item {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.news-item a {
+    display: flex;
+    padding: 1.5rem 0;
+    text-decoration: none;
+    color: #fff;
+    align-items: baseline;
+    transition: background 0.3s;
+}
+
+.news-item time {
+    font-family: var(--font-serif);
+    color: var(--color-gold);
+    margin-right: 2rem;
+    font-size: 0.9rem;
+}
+
+/* Split Business Section */
+.split-container {
+    display: flex;
+    min-height: 60vh;
+}
+
+.split-left {
+    flex: 1;
+    background: var(--color-navy-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-serif);
+    font-size: 2rem;
+    color: var(--color-gold);
+}
+
+.split-right {
+    flex: 1;
+    padding: 4rem;
+}
+
+.business-card {
+    margin-bottom: 3rem;
+}
+
+.business-card h4 {
+    color: var(--color-gold);
+    margin-bottom: 0.5rem;
+    font-size: 1.2rem;
+}

@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>会員ログイン・新規登録 | 中岡商会 特別会員専用サイト</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Outfit:wght@300;500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="/css/ec.css">
+</head>
+
+<body>
+    <header class="ec-header">
+        <div class="header-inner">
+            <a href="/" class="ec-logo">NAKAOKA <span>SYOUKAI</span></a>
+            <a href="/" class="nav-link">← ショップに戻る</a>
+        </div>
+    </header>
+
+    <main class="auth-container">
+        <div class="auth-card">
+            <!-- Tab Navigation -->
+            <div class="auth-tabs">
+                <button class="auth-tab active" data-tab="login">ログイン</button>
+                <button class="auth-tab" data-tab="register">新規会員登録</button>
+            </div>
+
+            <!-- ─── Login Form ─── -->
+            <div class="auth-panel active" id="panel-login">
+                <p class="auth-description">サロン会員様専用のログインページです。<br>登録済みのメールアドレスとパスワードでログインしてください。</p>
+                <form id="login-form">
+                    <div class="form-group">
+                        <label for="login-email">メールアドレス <span class="required">必須</span></label>
+                        <input type="email" id="login-email" required placeholder="example@email.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">パスワード <span class="required">必須</span></label>
+                        <div class="password-field">
+                            <input type="password" id="login-password" required placeholder="パスワードを入力" minlength="6">
+                            <button type="button" class="password-toggle" data-target="login-password" aria-label="パスワードを表示">
+                                <svg class="eye-open" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                <svg class="eye-closed" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="login-error" class="auth-error" style="display:none;"></div>
+                    <button type="submit" class="submit-btn" id="login-submit">
+                        <span class="btn-text">ログイン</span>
+                        <span class="btn-loading" style="display:none;">認証中...</span>
+                    </button>
+                </form>
+                <button class="reset-link" id="show-reset">パスワードをお忘れの方はこちら</button>
+            </div>
+
+            <!-- ─── Register: STEP 1 — 事業形態選択 ─── -->
+            <div class="auth-panel" id="panel-register">
+                <div class="auth-notice">
+                    中岡商会オンラインショップは<strong>プロ・サロン専用</strong>の卸サイトです。<br>
+                    美容室・理容室・エステ・ネイル・整体院などのオーナー・従業員の方が対象です。
+                </div>
+
+                <!-- Step Indicator -->
+                <div class="reg-steps" id="reg-steps">
+                    <div class="reg-step active" data-step="1">
+                        <span class="step-num">1</span>
+                        <span class="step-label">事業形態</span>
+                    </div>
+                    <div class="reg-step-line"></div>
+                    <div class="reg-step" data-step="2">
+                        <span class="step-num">2</span>
+                        <span class="step-label">基本情報</span>
+                    </div>
+                    <div class="reg-step-line"></div>
+                    <div class="reg-step" data-step="3">
+                        <span class="step-num">3</span>
+                        <span class="step-label">住所・詳細</span>
+                    </div>
+                </div>
+
+                <!-- STEP 1: 事業形態 -->
+                <div class="reg-step-panel active" id="reg-panel-1">
+                    <h3 class="reg-step-title">お客様の事業形態をお選びください</h3>
+                    <div class="biztype-cards">
+                        <label class="biztype-card" id="biztype-corporate">
+                            <input type="radio" name="biztype" value="corporate">
+                            <div class="biztype-icon">🏢</div>
+                            <div class="biztype-name">法人のお客様</div>
+                            <div class="biztype-desc">法人として<br>ご利用予定の方</div>
+                        </label>
+                        <label class="biztype-card" id="biztype-individual">
+                            <input type="radio" name="biztype" value="individual">
+                            <div class="biztype-icon">✂️</div>
+                            <div class="biztype-name">個人事業・個人利用</div>
+                            <div class="biztype-desc">個人事業主・フリーランス<br>開業予定・美容学生の方</div>
+                        </label>
+                    </div>
+                    <p class="auth-note">※一般のお客様（個人消費目的）はご登録いただけません。</p>
+                    <div id="biztype-error" class="auth-error" style="display:none;">事業形態を選択してください。</div>
+                    <button class="submit-btn" id="step1-next">次へ →</button>
+                </div>
+
+                <!-- STEP 2: 基本情報 -->
+                <div class="reg-step-panel" id="reg-panel-2">
+                    <h3 class="reg-step-title">基本情報を入力してください</h3>
+                    <form id="register-form">
+                        <div class="form-group">
+                            <label for="reg-email">メールアドレス <span class="required">必須</span></label>
+                            <p class="form-hint">※このメールアドレスが会員IDとなります（半角英数）</p>
+                            <input type="email" id="reg-email" required placeholder="example@email.com">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="reg-password">パスワード <span class="required">必須</span></label>
+                                <p class="form-hint">半角英数字6〜24文字</p>
+                                <div class="password-field">
+                                    <input type="password" id="reg-password" required placeholder="6文字以上" minlength="6" maxlength="24">
+                                    <button type="button" class="password-toggle" data-target="reg-password" aria-label="パスワードを表示">
+                                        <svg class="eye-open" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                        <svg class="eye-closed" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="reg-password-confirm">パスワード確認 <span class="required">必須</span></label>
+                                <p class="form-hint">もう一度入力してください</p>
+                                <div class="password-field">
+                                    <input type="password" id="reg-password-confirm" required placeholder="再入力" minlength="6">
+                                    <button type="button" class="password-toggle" data-target="reg-password-confirm" aria-label="パスワードを表示">
+                                        <svg class="eye-open" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                        <svg class="eye-closed" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="reg-company">会社名 / サロン名 <span class="required">必須</span></label>
+                                <input type="text" id="reg-company" required placeholder="例: 株式会社〇〇美容室">
+                            </div>
+                            <div class="form-group">
+                                <label for="reg-company-kana">会社名（カナ）</label>
+                                <input type="text" id="reg-company-kana" placeholder="例: カブシキガイシャマルマルビヨウシツ">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="reg-name">担当者名 <span class="required">必須</span></label>
+                                <p class="form-hint">※姓と名の間は詰めて入力</p>
+                                <input type="text" id="reg-name" required placeholder="例: 山田太郎">
+                            </div>
+                            <div class="form-group">
+                                <label for="reg-name-kana">担当者名（カナ） <span class="required">必須</span></label>
+                                <p class="form-hint">※姓と名の間は詰めて入力</p>
+                                <input type="text" id="reg-name-kana" required placeholder="例: ヤマダタロウ">
+                            </div>
+                        </div>
+                        <div id="step2-error" class="auth-error" style="display:none;"></div>
+                        <div class="form-btn-row">
+                            <button type="button" class="back-btn" id="step2-back">← 戻る</button>
+                            <button type="button" class="submit-btn" id="step2-next">次へ →</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- STEP 3: 住所・詳細 -->
+                <div class="reg-step-panel" id="reg-panel-3">
+                    <h3 class="reg-step-title">住所・連絡先を入力してください</h3>
+                    <div class="form-group">
+                        <label for="reg-phone">電話番号 <span class="required">必須</span></label>
+                        <input type="tel" id="reg-phone" required placeholder="例: 03-1234-5678">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group" style="flex: 0 0 160px;">
+                            <label for="reg-zip">郵便番号 <span class="required">必須</span></label>
+                            <input type="text" id="reg-zip" required placeholder="100-0001" maxlength="8">
+                        </div>
+                        <div class="form-group" style="flex: 1;">
+                            <label for="reg-address">住所 <span class="required">必須</span></label>
+                            <input type="text" id="reg-address" required placeholder="東京都千代田区1-1-1">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="reg-newsletter" checked>
+                            <span style="margin-left: 6px;">お得な情報・キャンペーンのメール配信を希望する</span>
+                        </label>
+                    </div>
+                    <div id="register-error" class="auth-error" style="display:none;"></div>
+                    <div class="form-btn-row">
+                        <button type="button" class="back-btn" id="step3-back">← 戻る</button>
+                        <button type="button" class="submit-btn" id="register-submit">
+                            <span class="btn-text">会員登録する</span>
+                            <span class="btn-loading" style="display:none;">登録中...</span>
+                        </button>
+                    </div>
+                    <p class="auth-note" style="margin-top: 1rem;">登録することで<a href="/guide/terms.html" target="_blank">利用規約</a>および<a href="/guide/privacy.html" target="_blank">プライバシーポリシー</a>に同意したものとみなします。</p>
+                </div>
+            </div>
+
+            <!-- ─── Password Reset ─── -->
+            <div class="auth-panel" id="panel-reset">
+                <p class="auth-description">ご登録のメールアドレスにパスワードリセット用のメールをお送りします。</p>
+                <form id="reset-form">
+                    <div class="form-group">
+                        <label for="reset-email">メールアドレス <span class="required">必須</span></label>
+                        <input type="email" id="reset-email" required placeholder="example@email.com">
+                    </div>
+                    <div id="reset-error" class="auth-error" style="display:none;"></div>
+                    <div id="reset-success" class="auth-success" style="display:none;"></div>
+                    <button type="submit" class="submit-btn">
+                        <span class="btn-text">リセットメールを送信</span>
+                        <span class="btn-loading" style="display:none;">送信中...</span>
+                    </button>
+                </form>
+                <button class="reset-link" id="back-to-login">← ログインに戻る</button>
+            </div>
+        </div>
+    </main>
+
+    <footer class="ec-footer">
+        <div class="footer-inner">
+            <p class="footer-copy">&copy; 2026 中岡商会 All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+    <script src="/js/firebase-config.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/postal.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const tabs = document.querySelectorAll('.auth-tab');
+            const panels = document.querySelectorAll('.auth-panel');
+            const redirectUrl = new URLSearchParams(window.location.search).get('redirect') || '/';
+
+            // ログイン済みはリダイレクト
+            Auth.onAuthChange(user => { if (user) window.location.href = redirectUrl; });
+
+            // ─── Tab switching ───
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    panels.forEach(p => p.classList.remove('active'));
+                    document.getElementById('panel-' + tab.dataset.tab).classList.add('active');
+                });
+            });
+
+            // ─── URL hash で register タブ初期表示 ───
+            if (location.hash === '#register') {
+                tabs.forEach(t => t.classList.remove('active'));
+                document.querySelector('[data-tab="register"]').classList.add('active');
+                panels.forEach(p => p.classList.remove('active'));
+                document.getElementById('panel-register').classList.add('active');
+            }
+
+            // ─── Password reset show/hide ───
+            document.getElementById('show-reset').addEventListener('click', () => {
+                panels.forEach(p => p.classList.remove('active'));
+                document.getElementById('panel-reset').classList.add('active');
+                tabs.forEach(t => t.classList.remove('active'));
+            });
+            document.getElementById('back-to-login').addEventListener('click', () => {
+                panels.forEach(p => p.classList.remove('active'));
+                document.getElementById('panel-login').classList.add('active');
+                tabs[0].classList.add('active');
+            });
+
+            // ─── Postal code auto-fill ───
+            PostalCode.bind('reg-zip', 'reg-address');
+
+            // ─── Password visibility toggle ───
+            document.querySelectorAll('.password-toggle').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const input = document.getElementById(btn.dataset.target);
+                    const eyeOpen = btn.querySelector('.eye-open');
+                    const eyeClosed = btn.querySelector('.eye-closed');
+                    const isPass = input.type === 'password';
+                    input.type = isPass ? 'text' : 'password';
+                    eyeOpen.style.display = isPass ? 'none' : 'block';
+                    eyeClosed.style.display = isPass ? 'block' : 'none';
+                });
+            });
+
+            // ─── Registration multi-step logic ───
+            let selectedBizType = '';
+
+            // 事業形態カード選択
+            document.querySelectorAll('.biztype-card input').forEach(radio => {
+                radio.addEventListener('change', () => {
+                    document.querySelectorAll('.biztype-card').forEach(c => c.classList.remove('selected'));
+                    radio.closest('.biztype-card').classList.add('selected');
+                    selectedBizType = radio.value;
+                    document.getElementById('biztype-error').style.display = 'none';
+                });
+            });
+
+            function setStep(n) {
+                document.querySelectorAll('.reg-step-panel').forEach(p => p.classList.remove('active'));
+                document.getElementById('reg-panel-' + n).classList.add('active');
+                document.querySelectorAll('.reg-step').forEach(s => {
+                    const num = parseInt(s.dataset.step);
+                    s.classList.toggle('active', num === n);
+                    s.classList.toggle('done', num < n);
+                });
+            }
+
+            // STEP1 → STEP2
+            document.getElementById('step1-next').addEventListener('click', () => {
+                if (!selectedBizType) {
+                    document.getElementById('biztype-error').style.display = 'block';
+                    return;
+                }
+                setStep(2);
+            });
+
+            // STEP2 back
+            document.getElementById('step2-back').addEventListener('click', () => setStep(1));
+
+            // STEP2 → STEP3
+            document.getElementById('step2-next').addEventListener('click', () => {
+                const errEl = document.getElementById('step2-error');
+                errEl.style.display = 'none';
+                const email = document.getElementById('reg-email').value.trim();
+                const pw = document.getElementById('reg-password').value;
+                const pwc = document.getElementById('reg-password-confirm').value;
+                const company = document.getElementById('reg-company').value.trim();
+                const name = document.getElementById('reg-name').value.trim();
+                const nameKana = document.getElementById('reg-name-kana').value.trim();
+                if (!email || !pw || !company || !name || !nameKana) {
+                    errEl.textContent = '必須項目をすべて入力してください。';
+                    errEl.style.display = 'block';
+                    return;
+                }
+                if (pw !== pwc) {
+                    errEl.textContent = 'パスワードが一致しません。';
+                    errEl.style.display = 'block';
+                    return;
+                }
+                setStep(3);
+            });
+
+            // STEP3 back
+            document.getElementById('step3-back').addEventListener('click', () => setStep(2));
+
+            // ─── Helpers ───
+            function showError(id, msg) { const el = document.getElementById(id); el.textContent = msg; el.style.display = 'block'; }
+            function hideError(id) { document.getElementById(id).style.display = 'none'; }
+            function setLoading(btn, loading) {
+                btn.disabled = loading;
+                btn.querySelector('.btn-text').style.display = loading ? 'none' : 'inline';
+                btn.querySelector('.btn-loading').style.display = loading ? 'inline' : 'none';
+            }
+            function authErrorMessage(code) {
+                const messages = {
+                    'auth/user-not-found': 'このメールアドレスは登録されていません。',
+                    'auth/wrong-password': 'パスワードが正しくありません。',
+                    'auth/invalid-credential': 'メールアドレスまたはパスワードが正しくありません。',
+                    'auth/email-already-in-use': 'このメールアドレスは既に登録されています。',
+                    'auth/weak-password': 'パスワードは6文字以上にしてください。',
+                    'auth/invalid-email': 'メールアドレスの形式が正しくありません。',
+                    'auth/too-many-requests': 'ログイン試行が多すぎます。しばらく経ってからお試しください。',
+                };
+                return messages[code] || 'エラーが発生しました。もう一度お試しください。';
+            }
+
+            // ─── Login ───
+            document.getElementById('login-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                hideError('login-error');
+                const btn = document.getElementById('login-submit');
+                setLoading(btn, true);
+                try {
+                    await Auth.login(
+                        document.getElementById('login-email').value,
+                        document.getElementById('login-password').value
+                    );
+                } catch (err) {
+                    showError('login-error', authErrorMessage(err.code));
+                    setLoading(btn, false);
+                }
+            });
+
+            // ─── Register (STEP3 submit) ───
+            document.getElementById('register-submit').addEventListener('click', async () => {
+                hideError('register-error');
+                const phone = document.getElementById('reg-phone').value.trim();
+                const zip = document.getElementById('reg-zip').value.trim();
+                const address = document.getElementById('reg-address').value.trim();
+                if (!phone || !address) {
+                    showError('register-error', '必須項目をすべて入力してください。');
+                    return;
+                }
+                const btn = document.getElementById('register-submit');
+                setLoading(btn, true);
+                try {
+                    await Auth.register(
+                        document.getElementById('reg-email').value,
+                        document.getElementById('reg-password').value,
+                        {
+                            bizType: selectedBizType,
+                            company: document.getElementById('reg-company').value,
+                            companyKana: document.getElementById('reg-company-kana').value,
+                            name: document.getElementById('reg-name').value,
+                            nameKana: document.getElementById('reg-name-kana').value,
+                            phone,
+                            zip,
+                            address,
+                            newsletter: document.getElementById('reg-newsletter').checked,
+                        }
+                    );
+                } catch (err) {
+                    showError('register-error', authErrorMessage(err.code));
+                    setLoading(btn, false);
+                }
+            });
+
+            // ─── Password Reset ───
+            document.getElementById('reset-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                hideError('reset-error');
+                const successEl = document.getElementById('reset-success');
+                successEl.style.display = 'none';
+                const btn = e.target.querySelector('.submit-btn');
+                setLoading(btn, true);
+                try {
+                    await Auth.resetPassword(document.getElementById('reset-email').value);
+                    successEl.textContent = 'パスワードリセット用のメールを送信しました。メールをご確認ください。';
+                    successEl.style.display = 'block';
+                } catch (err) {
+                    showError('reset-error', authErrorMessage(err.code));
+                }
+                setLoading(btn, false);
+            });
+        });
+    </script>
+</body>
+</html>
+

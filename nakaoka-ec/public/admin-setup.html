@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理者初期設定</title>
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            max-width: 500px;
+            margin: 2rem auto;
+            padding: 1rem;
+        }
+
+        h1 {
+            color: #6c5ce7;
+            font-size: 1.3rem;
+        }
+
+        .status {
+            padding: 0.5rem;
+            margin: 0.3rem 0;
+            border-radius: 6px;
+            font-size: 0.85rem;
+        }
+
+        .ok {
+            background: #c6f6d5;
+            color: #276749;
+        }
+
+        .ng {
+            background: #fed7d7;
+            color: #c53030;
+        }
+
+        .warn {
+            background: #fefcbf;
+            color: #b7791f;
+        }
+
+        button {
+            background: #6c5ce7;
+            color: #fff;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 1rem;
+            font-family: inherit;
+        }
+
+        p {
+            color: #718096;
+            font-size: 0.85rem;
+            line-height: 1.5;
+        }
+
+        code {
+            background: #edf2f7;
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.82rem;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>🔑 管理者初期設定</h1>
+    <p>ログイン中のアカウントに管理者権限（<code>role: 'admin'</code>）を付与します。<br>
+        この操作は初回のみ必要です。設定後はこのページを削除してください。</p>
+    <div id="log"></div>
+    <button onclick="setupAdmin()" id="setup-btn">管理者権限を設定する</button>
+
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+    <script src="/js/firebase-config.js"></script>
+    <script>
+        const log = document.getElementById('log');
+
+        firebase.auth().onAuthStateChanged(async (user) => {
+            if (!user) {
+                log.innerHTML = '<div class="status warn">⚠️ ログインしていません。先に<a href="/login.html">ログイン</a>してください。</div>';
+                document.getElementById('setup-btn').disabled = true;
+                return;
+            }
+            log.innerHTML = `<div class="status ok">✓ ログイン中: ${user.email}</div>`;
+
+            // 既に管理者かチェック
+            const doc = await db.collection('users').doc(user.uid).get();
+            if (doc.exists && doc.data().role === 'admin') {
+                log.innerHTML += '<div class="status ok">✓ 既に管理者権限が設定されています。</div>';
+                log.innerHTML += '<div class="status ok">→ <a href="/admin.html">管理ダッシュボード</a>にアクセスできます。</div>';
+                document.getElementById('setup-btn').style.display = 'none';
+            }
+        });
+
+        async function setupAdmin() {
+            const user = firebase.auth().currentUser;
+            if (!user) { log.innerHTML += '<div class="status ng">✗ ログインしていません。</div>'; return; }
+
+            try {
+                // ユーザードキュメントが存在するか確認
+                const doc = await db.collection('users').doc(user.uid).get();
+                if (doc.exists) {
+                    // 既存ドキュメントを更新
+                    await db.collection('users').doc(user.uid).update({ role: 'admin' });
+                } else {
+                    // 新規作成
+                    await db.collection('users').doc(user.uid).set({
+                        email: user.email,
+                        role: 'admin',
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                }
+                log.innerHTML += '<div class="status ok">✓ 管理者権限を設定しました！</div>';
+                log.innerHTML += '<div class="status ok">→ <a href="/admin.html">管理ダッシュボード</a>にアクセスできます。</div>';
+                document.getElementById('setup-btn').style.display = 'none';
+            } catch (err) {
+                log.innerHTML += `<div class="status ng">✗ エラー: ${err.message}</div>`;
+            }
+        }
+    </script>
+</body>
+
+</html>

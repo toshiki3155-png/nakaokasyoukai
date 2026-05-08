@@ -1,0 +1,20 @@
+/*
+Theme Name: Nakaoka Corp
+Theme URI: https://nakaoka.example.com
+Author: Nakaoka Shokai Dev Team
+Description: Custom B2B corporate theme with integrated Salon LP templates.
+Version: 1.0.0
+Text Domain: nakaoka
+*/
+
+/* Reset & Basics */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: #0a1128; /* Dark Navy Base code fallback */
+    color: #ffffff;
+}

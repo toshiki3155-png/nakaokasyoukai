@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理ダッシュボード | 中岡商会</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Outfit:wght@300;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/ec.css">
+    <style>
+        /* ─── Dashboard Container ─── */
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        /* ─── Tab Navigation ─── */
+        .tab-nav {
+            display: flex;
+            gap: 0;
+            border-bottom: 3px solid var(--border-light);
+            margin-bottom: 2rem;
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            flex: 0 1 auto;
+            padding: 1rem 1.5rem;
+            background: none;
+            border: none;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -3px;
+            white-space: nowrap;
+        }
+
+        .tab-btn:hover {
+            color: var(--primary);
+        }
+
+        .tab-btn.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .tab-icon {
+            margin-right: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        /* ─── Tab Panels ─── */
+        .tab-panel {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-panel.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* ─── Dashboard Stats ─── */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-box {
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            border: 1px solid var(--border-light);
+            box-shadow: var(--shadow-sm);
+            transition: all 0.2s ease;
+        }
+
+        .stat-box:hover {
+            box-shadow: var(--shadow);
+            transform: translateY(-2px);
+        }
+
+        .stat-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.25rem;
+            font-family: var(--font-display);
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        /* ─── Product Management ─── */
+        .section {
+            background: #fff;
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-light);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border-light);
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .action-btn {
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+        }
+
+        .action-btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* ─── Form Styles ─── */
+        .form-wrap {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: var(--radius-sm);
+            margin-bottom: 1.5rem;
+            border: 2px dashed var(--border);
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 0.4rem;
+            font-size: 0.95rem;
+        }
+
+        .required {
+            color: #e53e3e;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.7rem 0.9rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 0.95rem;
+            font-family: var(--font-sans);
+            transition: all 0.2s ease;
+            box-sizing: border-box;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+        }
+
+        /* ─── Image Upload ─── */
+        .image-upload {
+            border: 2px dashed var(--border);
+            border-radius: var(--radius-sm);
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: #f8f9fa;
+        }
+
+        .image-upload:hover {
+            border-color: var(--primary);
+            background: rgba(108, 92, 231, 0.05);
+        }
+
+        .image-upload.dragover {
+            border-color: var(--primary);
+            background: rgba(108, 92, 231, 0.1);
+        }
+
+        #image-preview {
+            margin-top: 1rem;
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+        }
+
+        #image-preview img {
+            max-width: 200px;
+            max-height: 200px;
+            border-radius: var(--radius-sm);
+        }
+
+        /* ─── Product Table ─── */
+        .product-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        .product-table thead {
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            border-bottom: 2px solid var(--border);
+        }
+
+        .product-table th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .product-table td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .product-table tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        .product-img {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: var(--radius-sm);
+        }
+
+        .product-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .edit-btn, .delete-btn {
+            padding: 0.4rem 0.8rem;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .edit-btn {
+            background: #e6f3ff;
+            color: #0066cc;
+            border: 1px solid #99ccff;
+        }
+
+        .edit-btn:hover {
+            background: #cce5ff;
+        }
+
+        .delete-btn {
+            background: #ffe6e6;
+            color: #cc0000;
+            border: 1px solid #ff9999;
+        }
+
+        .delete-btn:hover {
+            background: #ffcccc;
+        }
+
+        /* ─── Settings Panel ─── */
+        .settings-form {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .color-picker-group {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-end;
+        }
+
+        .color-input {
+            width: 60px;
+            height: 60px;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+        }
+
+        /* ─── Messages ─── */
+        .message {
+            padding: 1rem;
+            border-radius: var(--radius-sm);
+            margin-bottom: 1rem;
+            display: none;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.success {
+            background: #e6ffed;
+            color: #1a5c3e;
+            border-left: 4px solid #2db87a;
+            display: block;
+        }
+
+        .message.error {
+            background: #ffe6e6;
+            color: #5c1a1a;
+            border-left: 4px solid #d92d2d;
+            display: block;
+        }
+
+        .message.info {
+            background: #e6f3ff;
+            color: #1a3a5c;
+            border-left: 4px solid #2d92d9;
+            display: block;
+        }
+
+        /* ─── Empty State ─── */
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-light);
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        /* ─── Responsive ─── */
+        @media (max-width: 768px) {
+            .dashboard-container {
+                padding: 0.75rem;
+            }
+
+            .tab-btn {
+                padding: 0.8rem 1rem;
+                font-size: 0.85rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.75rem;
+            }
+
+            .section {
+                padding: 1rem;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="ec-header">
+        <div class="header-inner">
+            <a href="/" class="ec-logo">NAKAOKA <span>SYOUKAI</span></a>
+            <nav class="ec-nav">
+                <a href="/" class="nav-link">ショップ</a>
+                <button id="logout-btn" class="nav-link logout-link">ログアウト</button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="dashboard-container">
+        <div class="dashboard-header">
+            <h1 class="dashboard-title">📊 管理ダッシュボード</h1>
+        </div>
+
+        <!-- Tab Navigation -->
+        <div class="tab-nav">
+            <button class="tab-btn active" data-tab="dashboard">
+                <span class="tab-icon">📈</span>ダッシュボード
+            </button>
+            <button class="tab-btn" data-tab="products">
+                <span class="tab-icon">📦</span>商品管理
+            </button>
+            <button class="tab-btn" data-tab="settings">
+                <span class="tab-icon">⚙️</span>サイト設定
+            </button>
+            <button class="tab-btn" data-tab="line-notifications">
+                <span class="tab-icon">💬</span>LINE通知管理
+            </button>
+        </div>
+
+        <!-- ─── Dashboard Panel ─── -->
+        <div id="panel-dashboard" class="tab-panel active">
+            <div class="stats-grid" id="stats-grid"></div>
+            <div class="section">
+                <div class="section-header">
+                    <h2 class="section-title">📋 最新の注文</h2>
+                </div>
+                <div id="recent-orders"></div>
+            </div>
+        </div>
+
+        <!-- ─── Products Panel ─── -->
+        <div id="panel-products" class="tab-panel">
+            <div class="section">
+                <div class="section-header">
+                    <h2 class="section-title">新規商品追加</h2>
+                    <button class="action-btn" id="toggle-form">+ 展開</button>
+                </div>
+
+                <div id="product-form-wrap" class="form-wrap" style="display: none;">
+                    <form id="product-form">
+                        <div class="form-group">
+                            <label class="form-label">商品名 <span class="required">*</span></label>
+                            <input type="text" id="product-name" class="form-input" required placeholder="例: アリミノ クオライン 280">
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">価格（税込）<span class="required">*</span></label>
+                                <input type="number" id="product-price" class="form-input" required min="0" placeholder="2480">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">在庫数</label>
+                                <input type="number" id="product-stock" class="form-input" min="0" value="50">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">カテゴリ <span class="required">*</span></label>
+                                <input type="text" id="product-category" class="form-input" required placeholder="例: クオライン" list="category-list">
+                                <datalist id="category-list"></datalist>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">JANコード</label>
+                                <input type="text" id="product-jan" class="form-input" placeholder="4901275014807">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">説明</label>
+                            <textarea id="product-description" class="form-input" rows="3" placeholder="商品の説明を入力（オプション）"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">商品画像</label>
+                            <div class="image-upload" id="image-upload">
+                                <div>📸 ここにドラッグ＆ドロップ</div>
+                                <div style="font-size: 0.85rem; color: var(--text-light); margin-top: 0.5rem;">またはクリックして選択</div>
+                            </div>
+                            <input type="file" id="product-image-input" style="display: none;" accept="image/*">
+                            <div id="image-preview"></div>
+                        </div>
+
+                        <div id="product-success" class="message"></div>
+                        <div id="product-error" class="message"></div>
+
+                        <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                            <button type="submit" class="action-btn" style="flex: 1;">商品を登録</button>
+                            <button type="button" id="cancel-form" class="action-btn" style="flex: 1; background: #e2e8f0; color: var(--text-dark);">キャンセル</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-header">
+                    <h2 class="section-title">登録済み商品</h2>
+                </div>
+                <div class="form-row" style="margin-bottom: 1rem;">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label">商品検索</label>
+                        <input type="text" id="product-search" class="form-input" placeholder="商品名・カテゴリ・JANで検索">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label">表示フィルタ</label>
+                        <select id="product-visibility-filter" class="form-input">
+                            <option value="all">すべて</option>
+                            <option value="visible">公開中のみ</option>
+                            <option value="hidden">非公開のみ</option>
+                            <option value="low-stock">在庫10未満</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="product-list"></div>
+            </div>
+        </div>
+
+        <!-- ─── Settings Panel ─── -->
+        <div id="panel-settings" class="tab-panel">
+            <div class="section">
+                <div class="section-header">
+                    <h2 class="section-title">⚙️ サイト基本設定</h2>
+                </div>
+
+                <form id="settings-form" class="settings-form">
+                    <div class="form-group">
+                        <label class="form-label">サイト名</label>
+                        <input type="text" id="site-name" class="form-input" value="中岡商会">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">サイト説明</label>
+                        <textarea id="site-description" class="form-input" rows="3" placeholder="サイトの説明"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">お問い合わせメール</label>
+                        <input type="email" id="contact-email" class="form-input" placeholder="info@example.com">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">配送料金</label>
+                            <input type="number" id="shipping-fee" class="form-input" min="0" value="0">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">送料無料ライン</label>
+                            <input type="number" id="free-shipping-threshold" class="form-input" min="0" value="10000">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">プライマリカラー</label>
+                            <input type="color" id="primary-color" class="color-input" value="#6c5ce7">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">セカンダリカラー</label>
+                            <input type="color" id="secondary-color" class="color-input" value="#666666">
+                        </div>
+                    </div>
+
+                    <hr style="margin: 2rem 0; border: none; border-top: 1px solid var(--border-light);">
+
+                    <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem; margin-top: 1rem;">📱 LINE Messaging API 設定</h3>
+
+                    <div class="form-group">
+                        <label class="form-label">Channel Access Token</label>
+                        <input type="password" id="line-channel-access-token" class="form-input" placeholder="LINE Messaging API の Channel Access Token">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">送信先ユーザーID</label>
+                        <input type="text" id="line-user-id" class="form-input" placeholder="Uから始まるユーザーIDを入力">
+                        <div style="font-size: 0.8rem; color: var(--text-light); margin-top: 0.5rem;">
+                            ※ LINE Developers の Messaging API チャネルで発行したトークンとユーザーIDを設定すると、注文時に自動通知されます。
+                        </div>
+                    </div>
+
+                    <div id="settings-success" class="message"></div>
+                    <div id="settings-error" class="message"></div>
+
+                    <button type="submit" class="action-btn">設定を保存</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- ─── LINE Notifications Panel ─── -->
+        <div id="panel-line-notifications" class="tab-panel">
+            <div class="section">
+                <div class="section-header">
+                    <h2 class="section-title">💬 LINE 通知管理</h2>
+                </div>
+                <p style="font-size: 0.9rem; color: var(--text-light); margin-bottom: 1rem;">通知キューの状態確認と再送キュー投入ができます。</p>
+
+                <div id="notifications-list" style="margin-bottom: 2rem;"></div>
+
+                <div id="notifications-empty" style="text-align: center; padding: 2rem; color: var(--text-light);">
+                    📋 通知キューが空です
+                </div>
+
+                <div id="notification-error" class="message"></div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="ec-footer">
+        <p>&copy; 2026 中岡商会 All Rights Reserved.</p>
+    </footer>
+
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-storage-compat.js"></script>
+    <script src="/js/firebase-config.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/admin-dashboard.js"></script>
+</body>
+
+</html>

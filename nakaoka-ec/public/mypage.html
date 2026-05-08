@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>マイページ | 中岡商会 オンラインショップ</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Outfit:wght@300;500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="/css/ec.css">
+</head>
+
+<body>
+    <header class="ec-header">
+        <div class="header-inner">
+            <a href="/" class="ec-logo">NAKAOKA <span>SYOUKAI</span></a>
+            <nav class="ec-nav">
+                <a href="/" class="nav-link">ショップ</a>
+                <a href="/admin.html" class="nav-link">管理画面</a>
+                <button id="logout-btn" class="nav-link logout-link">ログアウト</button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="mypage-container">
+        <h1>マイページ</h1>
+
+        <!-- Profile Section -->
+        <section class="mypage-section" id="profile-section">
+            <div class="section-header">
+                <h2>登録情報</h2>
+                <button class="edit-btn" id="edit-profile-btn">編集する</button>
+            </div>
+
+            <!-- Display mode -->
+            <div id="profile-display">
+                <div class="profile-grid">
+                    <div class="profile-item">
+                        <span class="profile-label">会社名 / サロン名</span>
+                        <span class="profile-value" id="disp-company">-</span>
+                    </div>
+                    <div class="profile-item">
+                        <span class="profile-label">担当者名</span>
+                        <span class="profile-value" id="disp-name">-</span>
+                    </div>
+                    <div class="profile-item">
+                        <span class="profile-label">メールアドレス</span>
+                        <span class="profile-value" id="disp-email">-</span>
+                    </div>
+                    <div class="profile-item">
+                        <span class="profile-label">電話番号</span>
+                        <span class="profile-value" id="disp-phone">-</span>
+                    </div>
+                    <div class="profile-item">
+                        <span class="profile-label">郵便番号</span>
+                        <span class="profile-value" id="disp-zip">-</span>
+                    </div>
+                    <div class="profile-item">
+                        <span class="profile-label">住所</span>
+                        <span class="profile-value" id="disp-address">-</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Edit mode -->
+            <div id="profile-edit" style="display:none;">
+                <form id="profile-form">
+                    <div class="form-group">
+                        <label for="edit-company">会社名 / サロン名</label>
+                        <input type="text" id="edit-company" placeholder="例: ヘアサロン LUXE">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-name">担当者名 <span class="required">*</span></label>
+                        <input type="text" id="edit-name" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edit-phone">電話番号 <span class="required">*</span></label>
+                            <input type="tel" id="edit-phone" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-zip">郵便番号</label>
+                            <input type="text" id="edit-zip">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-address">住所 <span class="required">*</span></label>
+                        <input type="text" id="edit-address" required>
+                    </div>
+                    <div id="profile-error" class="auth-error" style="display:none;"></div>
+                    <div id="profile-success" class="auth-success" style="display:none;"></div>
+                    <div class="form-actions">
+                        <button type="button" class="cancel-btn" id="cancel-edit">キャンセル</button>
+                        <button type="submit" class="submit-btn submit-btn-sm">保存する</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- Shipping Addresses Section -->
+        <section class="mypage-section">
+            <div class="section-header">
+                <h2>配送先管理</h2>
+                <button class="edit-btn" id="toggle-addr-form">+ 追加</button>
+            </div>
+            <p style="font-size:0.78rem;color:var(--text-light);margin-bottom:0.75rem;">
+                注文時にここに登録した配送先から選べます。複数店舗の登録が可能です。</p>
+            <div id="addr-form-wrap" style="display:none;">
+                <div class="form-group">
+                    <label for="new-addr-label">ラベル <span class="required">*</span></label>
+                    <input type="text" id="new-addr-label" placeholder="例: 本店 / 2号店">
+                </div>
+                <div class="form-group">
+                    <label for="new-addr-company">サロン名 / 会社名</label>
+                    <input type="text" id="new-addr-company" placeholder="例: ヘアサロン LUXE">
+                </div>
+                <div class="form-group">
+                    <label for="new-addr-name">受取人名 <span class="required">*</span></label>
+                    <input type="text" id="new-addr-name" placeholder="例: 中川 俊樹">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="new-addr-phone">電話番号 <span class="required">*</span></label>
+                        <input type="tel" id="new-addr-phone" placeholder="090-1234-5678">
+                    </div>
+                    <div class="form-group">
+                        <label for="new-addr-zip">郵便番号</label>
+                        <input type="text" id="new-addr-zip" placeholder="123-4567">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="new-addr-address">住所 <span class="required">*</span></label>
+                    <input type="text" id="new-addr-address" placeholder="東京都港区...">
+                </div>
+                <div id="new-addr-error" class="auth-error" style="display:none;"></div>
+                <div id="new-addr-success" class="auth-success" style="display:none;"></div>
+                <div class="form-actions">
+                    <button type="button" class="cancel-btn" id="cancel-addr">キャンセル</button>
+                    <button type="button" class="submit-btn submit-btn-sm" id="save-addr">
+                        <span class="btn-text">保存</span>
+                        <span class="btn-loading" style="display:none;">保存中...</span>
+                    </button>
+                </div>
+            </div>
+            <div id="address-list">
+                <div class="loading-state">
+                    <div class="spinner"></div>
+                    <p>読み込み中...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Order History Section -->
+        <section class="mypage-section">
+            <h2>注文履歴</h2>
+            <div id="orders-list">
+                <div class="loading-state">
+                    <div class="spinner"></div>
+                    <p>読み込み中...</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="ec-footer">
+        <p>&copy; 2026 中岡商会 All Rights Reserved.</p>
+    </footer>
+
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+    <script src="/js/firebase-config.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/postal.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Require authentication
+            const user = await Auth.requireAuth();
+            let profile = await Auth.getUserProfile(user.uid);
+
+            // Display profile
+            function renderProfile(p) {
+                document.getElementById('disp-company').textContent = p.company || '-';
+                document.getElementById('disp-name').textContent = p.name || '-';
+                document.getElementById('disp-email').textContent = p.email || user.email;
+                document.getElementById('disp-phone').textContent = p.phone || '-';
+                document.getElementById('disp-zip').textContent = p.zip || '-';
+                document.getElementById('disp-address').textContent = p.address || '-';
+            }
+            if (profile) renderProfile(profile);
+
+            // Edit mode toggle
+            document.getElementById('edit-profile-btn').addEventListener('click', () => {
+                document.getElementById('profile-display').style.display = 'none';
+                document.getElementById('profile-edit').style.display = 'block';
+                document.getElementById('edit-profile-btn').style.display = 'none';
+                // Fill form
+                if (profile) {
+                    document.getElementById('edit-company').value = profile.company || '';
+                    document.getElementById('edit-name').value = profile.name || '';
+                    document.getElementById('edit-phone').value = profile.phone || '';
+                    document.getElementById('edit-zip').value = profile.zip || '';
+                    document.getElementById('edit-address').value = profile.address || '';
+                }
+            });
+            document.getElementById('cancel-edit').addEventListener('click', () => {
+                document.getElementById('profile-display').style.display = 'block';
+                document.getElementById('profile-edit').style.display = 'none';
+                document.getElementById('edit-profile-btn').style.display = 'inline-flex';
+            });
+
+            // Postal code auto-fill for profile edit
+            PostalCode.bind('edit-zip', 'edit-address');
+            PostalCode.bind('new-addr-zip', 'new-addr-address');
+
+            // ══════════════════════════════════════
+            // 配送先管理
+            // ══════════════════════════════════════
+            let myAddresses = [];
+
+            async function loadMyAddresses() {
+                const listEl = document.getElementById('address-list');
+                try {
+                    const snap = await db.collection('users').doc(user.uid)
+                        .collection('addresses').orderBy('isDefault', 'desc').get();
+                    myAddresses = [];
+                    snap.forEach(doc => myAddresses.push({ id: doc.id, ...doc.data() }));
+                    renderMyAddresses();
+                } catch (err) {
+                    listEl.innerHTML = '<p class="empty-orders">配送先の取得に失敗しました。</p>';
+                }
+            }
+
+            function renderMyAddresses() {
+                const listEl = document.getElementById('address-list');
+                if (myAddresses.length === 0) {
+                    listEl.innerHTML = '<p class="empty-orders">配送先が登録されていません。</p>';
+                    return;
+                }
+                listEl.innerHTML = myAddresses.map(a => `
+                    <div style="display:flex;justify-content:space-between;align-items:center;padding:0.6rem;border:1px solid var(--border-light);border-radius:8px;margin-bottom:0.4rem;">
+                        <div style="flex:1;min-width:0;">
+                            <div style="font-size:0.82rem;font-weight:600;color:var(--text-dark);">
+                                ${a.label || '配送先'}
+                                ${a.isDefault ? '<span style="font-size:0.6rem;background:var(--primary);color:#fff;padding:0.1rem 0.4rem;border-radius:4px;margin-left:0.3rem;">デフォルト</span>' : ''}
+                            </div>
+                            <div style="font-size:0.75rem;color:var(--text-light);margin-top:0.1rem;">
+                                ${a.company ? a.company + ' / ' : ''}${a.name || '-'} ・ 〒${a.zip || '-'} ${a.address || '-'} ・ TEL: ${a.phone || '-'}
+                            </div>
+                        </div>
+                        <div style="display:flex;gap:0.3rem;flex-shrink:0;">
+                            ${!a.isDefault ? `<button onclick="setDefaultAddr('${a.id}')" style="font-size:0.65rem;padding:0.2rem 0.4rem;border:1px solid var(--border);border-radius:4px;background:#fff;cursor:pointer;font-family:var(--font-sans);">デフォルト</button>` : ''}
+                            <button onclick="deleteAddr('${a.id}','${a.label}')" style="font-size:0.65rem;padding:0.2rem 0.4rem;border:1px solid #fc8181;border-radius:4px;background:#fff;color:#c53030;cursor:pointer;font-family:var(--font-sans);">削除</button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            window.setDefaultAddr = async (id) => {
+                try {
+                    const batch = db.batch();
+                    myAddresses.forEach(a => {
+                        batch.update(db.collection('users').doc(user.uid).collection('addresses').doc(a.id), { isDefault: a.id === id });
+                    });
+                    await batch.commit();
+                    loadMyAddresses();
+                } catch (err) { alert('デフォルト設定に失敗: ' + err.message); }
+            };
+
+            window.deleteAddr = async (id, label) => {
+                if (!confirm(`「${label}」を削除しますか？`)) return;
+                try {
+                    await db.collection('users').doc(user.uid).collection('addresses').doc(id).delete();
+                    loadMyAddresses();
+                } catch (err) { alert('削除失敗: ' + err.message); }
+            };
+
+            // 配送先フォーム
+            const addrFormWrap = document.getElementById('addr-form-wrap');
+            const toggleAddrBtn = document.getElementById('toggle-addr-form');
+            toggleAddrBtn.addEventListener('click', () => {
+                addrFormWrap.style.display = addrFormWrap.style.display === 'none' ? 'block' : 'none';
+                toggleAddrBtn.textContent = addrFormWrap.style.display === 'none' ? '+ 追加' : '− 閉じる';
+            });
+            document.getElementById('cancel-addr').addEventListener('click', () => {
+                addrFormWrap.style.display = 'none';
+                toggleAddrBtn.textContent = '+ 追加';
+            });
+
+            document.getElementById('save-addr').addEventListener('click', async () => {
+                const label = document.getElementById('new-addr-label').value.trim();
+                const company = document.getElementById('new-addr-company').value.trim();
+                const name = document.getElementById('new-addr-name').value.trim();
+                const phone = document.getElementById('new-addr-phone').value.trim();
+                const zip = document.getElementById('new-addr-zip').value.trim();
+                const address = document.getElementById('new-addr-address').value.trim();
+                const errEl = document.getElementById('new-addr-error');
+                const sucEl = document.getElementById('new-addr-success');
+                errEl.style.display = sucEl.style.display = 'none';
+
+                if (!label || !name || !phone || !address) {
+                    errEl.textContent = '必須項目を入力してください。';
+                    errEl.style.display = 'block';
+                    return;
+                }
+                const btn = document.getElementById('save-addr');
+                btn.disabled = true;
+                btn.querySelector('.btn-text').style.display = 'none';
+                btn.querySelector('.btn-loading').style.display = 'inline';
+                try {
+                    await db.collection('users').doc(user.uid).collection('addresses').add({
+                        label, company, name, phone, zip, address,
+                        isDefault: myAddresses.length === 0,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    sucEl.textContent = `「${label}」を追加しました。`;
+                    sucEl.style.display = 'block';
+                    document.getElementById('new-addr-label').value = '';
+                    document.getElementById('new-addr-company').value = '';
+                    document.getElementById('new-addr-name').value = '';
+                    document.getElementById('new-addr-phone').value = '';
+                    document.getElementById('new-addr-zip').value = '';
+                    document.getElementById('new-addr-address').value = '';
+                    addrFormWrap.style.display = 'none';
+                    toggleAddrBtn.textContent = '+ 追加';
+                    loadMyAddresses();
+                    setTimeout(() => sucEl.style.display = 'none', 3000);
+                } catch (err) {
+                    errEl.textContent = '保存失敗: ' + err.message;
+                    errEl.style.display = 'block';
+                }
+                btn.disabled = false;
+                btn.querySelector('.btn-text').style.display = 'inline';
+                btn.querySelector('.btn-loading').style.display = 'none';
+            });
+
+            loadMyAddresses();
+
+            // Save profile
+            document.getElementById('profile-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const errorEl = document.getElementById('profile-error');
+                const successEl = document.getElementById('profile-success');
+                errorEl.style.display = 'none';
+                successEl.style.display = 'none';
+                try {
+                    const newData = {
+                        company: document.getElementById('edit-company').value,
+                        name: document.getElementById('edit-name').value,
+                        phone: document.getElementById('edit-phone').value,
+                        zip: document.getElementById('edit-zip').value,
+                        address: document.getElementById('edit-address').value,
+                    };
+                    await Auth.updateProfile(user.uid, newData);
+                    profile = { ...profile, ...newData };
+                    renderProfile(profile);
+                    document.getElementById('profile-display').style.display = 'block';
+                    document.getElementById('profile-edit').style.display = 'none';
+                    document.getElementById('edit-profile-btn').style.display = 'inline-flex';
+                    successEl.textContent = '保存しました。';
+                    successEl.style.display = 'block';
+                    setTimeout(() => successEl.style.display = 'none', 3000);
+                } catch (err) {
+                    errorEl.textContent = '保存に失敗しました。' + err.message;
+                    errorEl.style.display = 'block';
+                }
+            });
+
+            // Load order history
+            async function loadOrders() {
+                const ordersEl = document.getElementById('orders-list');
+                try {
+                    const snapshot = await db.collection('orders')
+                        .where('userId', '==', user.uid)
+                        .orderBy('createdAt', 'desc')
+                        .get();
+
+                    if (snapshot.empty) {
+                        ordersEl.innerHTML = '<p class="empty-orders">まだ注文履歴がありません。</p>';
+                        return;
+                    }
+
+                    let html = '';
+                    snapshot.forEach(doc => {
+                        const order = doc.data();
+                        const date = order.createdAt ? order.createdAt.toDate().toLocaleDateString('ja-JP') : '-';
+                        const itemCount = order.items ? order.items.length : 0;
+                        html += `
+                            <div class="order-card">
+                                <div class="order-header">
+                                    <div>
+                                        <span class="order-date">${date}</span>
+                                        <span class="order-status status-${order.status === '未処理' ? 'pending' : 'done'}">${order.status || '未処理'}</span>
+                                    </div>
+                                    <span class="order-total">¥${(order.total || 0).toLocaleString()}</span>
+                                </div>
+                                <div class="order-items">
+                                    ${(order.items || []).map(item =>
+                            `<span class="order-item-name">${item.name} × ${item.qty}</span>`
+                        ).join('')}
+                                </div>
+                                <div class="order-id-small">注文番号: ${doc.id}</div>
+                            </div>
+                        `;
+                    });
+                    ordersEl.innerHTML = html;
+                } catch (err) {
+                    console.error('注文履歴取得エラー:', err);
+                    ordersEl.innerHTML = '<p class="empty-orders">注文履歴の取得に失敗しました。</p>';
+                }
+            }
+            loadOrders();
+
+            // Logout
+            document.getElementById('logout-btn').addEventListener('click', async () => {
+                await Auth.logout();
+                window.location.href = '/';
+            });
+        });
+    </script>
+</body>
+
+</html>

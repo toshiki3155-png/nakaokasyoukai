@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <title>商品データ投入ツール</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            max-width: 600px;
+            margin: 2rem auto;
+            padding: 1rem;
+        }
+
+        .status {
+            padding: 0.5rem;
+            margin: 0.3rem 0;
+            border-radius: 6px;
+            font-size: 0.85rem;
+        }
+
+        .ok {
+            background: #c6f6d5;
+        }
+
+        .ng {
+            background: #fed7d7;
+        }
+
+        button {
+            background: #6c5ce7;
+            color: #fff;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        h1 {
+            color: #6c5ce7;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>📦 商品データ投入</h1>
+    <p>以下のボタンをクリックすると、スプレッドシートの商品カテゴリに基づいたサンプル商品をFirestoreに登録します。</p>
+    <button onclick="seedProducts()">商品データを投入する</button>
+    <div id="log"></div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+    <script src="/js/firebase-config.js"></script>
+    <script>
+        const products = [
+            // ==========================================
+            // ★ ティアーズ OX — メイン商品
+            // ==========================================
+            { name: "ティアーズ OX 6% 6本セット（2000ml）", price: 10800, category: "ティアーズ OX", stock: 50, visible: true, jan: "4983209565043", imageUrl: "http://b-pilot.jp/wp-content/uploads/2026/02/IMG_2018-1.jpeg" },
+            { name: "ティアーズ OX 3% 6本セット（2000ml）", price: 10800, category: "ティアーズ OX", stock: 50, visible: true, jan: "4983209565050", imageUrl: "http://b-pilot.jp/wp-content/uploads/2026/02/IMG_2021.jpeg" },
+
+            // ==========================================
+            // ★ アリミノ クオライン — メイン商品
+            // ==========================================
+            { name: "アリミノ クオライン 280", price: 2480, category: "クオライン", stock: 40, visible: true, jan: "4901275014807", imageUrl: "http://b-pilot.jp/wp-content/uploads/2026/02/IMG_2005.jpeg" },
+            { name: "アリミノ クオライン 250", price: 2480, category: "クオライン", stock: 40, visible: true, jan: "4901275015118", imageUrl: "http://b-pilot.jp/wp-content/uploads/2026/02/IMG_2006.jpeg" },
+            { name: "アリミノ クオライン 200", price: 2480, category: "クオライン", stock: 35, visible: true, jan: "4901275015125", imageUrl: "http://b-pilot.jp/wp-content/uploads/2026/02/IMG_2008.jpeg" },
+            { name: "アリミノ クオライン 130", price: 2480, category: "クオライン", stock: 30, visible: true, jan: "4901275014838", imageUrl: "http://b-pilot.jp/wp-content/uploads/2026/02/IMG_2009.jpeg" },
+            { name: "アリミノ クオライン 80", price: 2480, category: "クオライン", stock: 30, visible: true, jan: "4901275014852", imageUrl: "http://b-pilot.jp/wp-content/uploads/2026/02/IMG_2007.jpeg" },
+            { name: "アリミノ クオライン アフタークリーム", price: 2200, category: "クオライン", stock: 25, visible: true, jan: "4901275014883", imageUrl: "http://b-pilot.jp/wp-content/uploads/2026/02/IMG_2017.jpeg" },
+            { name: "アリミノ クオライン アジャスト0", price: 2200, category: "クオライン", stock: 25, visible: true, jan: "4901275014869", imageUrl: "http://b-pilot.jp/wp-content/uploads/2026/02/IMG_2011.jpeg" },
+            { name: "アリミノ クオライン OX 2剤", price: 3140, category: "クオライン", stock: 50, visible: true, jan: "4901275014876", imageUrl: "http://b-pilot.jp/wp-content/uploads/2026/02/IMG_2012.jpeg" },
+            { name: "アリミノ クオライン ミルクOX", price: 3140, category: "クオライン", stock: 45, visible: true, jan: "4901275015200", imageUrl: "http://b-pilot.jp/wp-content/uploads/2026/02/IMG_2016.jpeg" },
+
+            // ==========================================
+            // π more (パイモア)
+            // ==========================================
+            { name: "π more STRAIGHT CREAM 2剤（960ml）", price: 3500, category: "パイモア", stock: 30, visible: true, jan: "4582406483329", imageUrl: "http://b-pilot.jp/wp-content/uploads/2026/02/IMG_2029.jpeg" },
+        ];
+
+        async function seedProducts() {
+            const log = document.getElementById('log');
+            log.innerHTML = '<p>投入開始...</p>';
+
+            for (const p of products) {
+                try {
+                    await db.collection('products').add({
+                        name: p.name,
+                        price: p.price,
+                        category: p.category,
+                        stock: p.stock,
+                        visible: p.visible,
+                        jan: p.jan || '',
+                        imageUrl: p.imageUrl || '',
+                        caseJan: '',
+                        caseQty: 0,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    log.innerHTML += `<div class="status ok">✓ ${p.name}</div>`;
+                } catch (err) {
+                    log.innerHTML += `<div class="status ng">✗ ${p.name}: ${err.message}</div>`;
+                }
+            }
+            log.innerHTML += `<p><strong>完了！${products.length}件の商品を投入しました。</strong></p>`;
+        }
+    </script>
+</body>
+
+</html>

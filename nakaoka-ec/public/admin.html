@@ -1,0 +1,1516 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理ダッシュボード | 中岡商会</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Outfit:wght@300;500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="/css/ec.css">
+    <style>
+        /* ─── Admin Dashboard Tabs ─── */
+        .admin-tabs {
+            display: flex;
+            gap: 0;
+            border-bottom: 2px solid var(--border);
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .admin-tab {
+            flex: 1;
+            min-width: 0;
+            padding: 0.8rem 0.5rem;
+            background: none;
+            border: none;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: all var(--transition);
+            position: relative;
+            font-family: var(--font-sans);
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .admin-tab:hover {
+            color: var(--primary);
+        }
+
+        .admin-tab.active {
+            color: var(--primary);
+        }
+
+        .admin-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--primary);
+            border-radius: 3px 3px 0 0;
+        }
+
+        .admin-tab-icon {
+            font-size: 1.1rem;
+            display: block;
+            margin-bottom: 0.2rem;
+        }
+
+        .admin-panel {
+            display: none;
+        }
+
+        .admin-panel.active {
+            display: block;
+        }
+
+        /* Stats Bar */
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border-radius: var(--radius-sm);
+            padding: 1rem;
+            text-align: center;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-light);
+        }
+
+        .stat-number {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+            color: var(--text-light);
+            margin-top: 0.2rem;
+        }
+
+        /* Order status badges */
+        .status-badge {
+            display: inline-block;
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 0.15rem 0.5rem;
+            border-radius: 10px;
+        }
+
+        .status-未処理 {
+            background: #fefcbf;
+            color: #b7791f;
+        }
+
+        .status-処理済 {
+            background: #c6f6d5;
+            color: #276749;
+        }
+
+        .status-発送済 {
+            background: #bee3f8;
+            color: #2b6cb0;
+        }
+
+        .status-キャンセル {
+            background: #fed7d7;
+            color: #c53030;
+        }
+
+        /* Customer card */
+        .customer-card {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-sm);
+            margin-bottom: 0.5rem;
+            transition: box-shadow var(--transition);
+        }
+
+        .customer-card:hover {
+            box-shadow: var(--shadow);
+        }
+
+        .customer-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-light), var(--primary));
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+        }
+
+        .customer-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .customer-name {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .customer-meta {
+            font-size: 0.72rem;
+            color: var(--text-light);
+            margin-top: 0.15rem;
+        }
+
+        /* Order card in admin */
+        .admin-order-card {
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-sm);
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            transition: box-shadow var(--transition);
+        }
+
+        .admin-order-card:hover {
+            box-shadow: var(--shadow);
+        }
+
+        .admin-order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .admin-order-customer {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .admin-order-date {
+            font-size: 0.72rem;
+            color: var(--text-light);
+        }
+
+        .admin-order-items {
+            font-size: 0.75rem;
+            color: var(--text-mid);
+            margin-bottom: 0.4rem;
+        }
+
+        .admin-order-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .admin-order-total {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--text-dark);
+        }
+
+        .status-select {
+            padding: 0.3rem 0.5rem;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            font-size: 0.72rem;
+            font-family: var(--font-sans);
+            background: #fff;
+            cursor: pointer;
+        }
+
+        /* Search */
+        .admin-search {
+            width: 100%;
+            padding: 0.6rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+            font-family: var(--font-sans);
+            transition: border-color var(--transition);
+        }
+
+        .admin-search:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        /* Access denied */
+        .access-denied {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+
+        .access-denied-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .access-denied h2 {
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .access-denied p {
+            color: var(--text-light);
+            margin-bottom: 1.5rem;
+        }
+
+        .access-denied .back-btn {
+            display: inline-block;
+            background: var(--primary);
+            color: #fff;
+            text-decoration: none;
+            padding: 0.7rem 2rem;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            transition: all var(--transition);
+        }
+
+        .access-denied .back-btn:hover {
+            background: var(--primary-hover);
+        }
+
+        .admin-content {
+            display: none;
+        }
+
+        /* Permission toggle */
+        .role-toggle {
+            padding: 0.3rem 0.7rem;
+            border-radius: 6px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all var(--transition);
+            font-family: var(--font-sans);
+        }
+
+        .role-toggle.is-admin {
+            background: #c6f6d5;
+            color: #276749;
+        }
+
+        .role-toggle.is-member {
+            background: #e2e8f0;
+            color: var(--text-mid);
+        }
+
+        @media (max-width: 768px) {
+            .stats-bar {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.5rem;
+            }
+
+            .stat-card {
+                padding: 0.7rem;
+            }
+
+            .stat-number {
+                font-size: 1.2rem;
+            }
+
+            .admin-tab {
+                font-size: 0.7rem;
+                padding: 0.6rem 0.3rem;
+            }
+
+            .admin-tab-icon {
+                font-size: 0.95rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="ec-header">
+        <div class="header-inner">
+            <a href="/" class="ec-logo">NAKAOKA <span>SYOUKAI</span></a>
+            <nav class="ec-nav">
+                <a href="/" class="nav-link">ショップ</a>
+                <a href="/mypage.html" class="nav-link">マイページ</a>
+                <button id="logout-btn" class="nav-link logout-link">ログアウト</button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="admin-container">
+        <h1>管理ダッシュボード</h1>
+
+        <!-- アクセス拒否画面（非管理者用） -->
+        <div class="access-denied" id="access-denied" style="display:none;">
+            <div class="access-denied-icon">🔒</div>
+            <h2>アクセス権限がありません</h2>
+            <p>この管理画面は管理者のみアクセスできます。<br>管理者権限が必要な場合はサイト管理者にお問い合わせください。</p>
+            <a href="/admin-login.html" class="back-btn">ログイン画面に戻る</a>
+        </div>
+
+        <!-- 以下は管理者のみ表示 -->
+        <div class="admin-content" id="admin-content">
+
+            <!-- サマリー統計 -->
+            <div class="stats-bar">
+                <div class="stat-card">
+                    <div class="stat-number" id="stat-products">-</div>
+                    <div class="stat-label">商品数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="stat-customers">-</div>
+                    <div class="stat-label">顧客数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="stat-orders">-</div>
+                    <div class="stat-label">注文数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="stat-pending">-</div>
+                    <div class="stat-label">未処理</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="stat-revenue" style="font-size:0.9rem;">-</div>
+                    <div class="stat-label">売上</div>
+                </div>
+            </div>
+
+            <!-- タブナビゲーション -->
+            <div class="admin-tabs">
+                <button class="admin-tab active" data-panel="products">
+                    <span class="admin-tab-icon">🛒</span>商品管理
+                </button>
+                <button class="admin-tab" data-panel="customers">
+                    <span class="admin-tab-icon">👥</span>顧客管理
+                </button>
+                <button class="admin-tab" data-panel="orders">
+                    <span class="admin-tab-icon">📋</span>注文管理
+                </button>
+                <button class="admin-tab" data-panel="account">
+                    <span class="admin-tab-icon">⚙️</span>アカウント
+                </button>
+                <button class="admin-tab" data-panel="analytics">
+                    <span class="admin-tab-icon">📊</span>売上分析
+                </button>
+                <button class="admin-tab" data-panel="links">
+                    <span class="admin-tab-icon">📌</span>リンク集
+                </button>
+            </div>
+
+            <!-- ═══════════════ 商品管理パネル ═══════════════ -->
+            <div class="admin-panel active" id="panel-products">
+                <section class="mypage-section">
+                    <div class="section-header">
+                        <h2>商品一覧 <span id="product-count" class="product-count-badge">0</span></h2>
+                        <button class="edit-btn" id="toggle-add-form">+ 新規追加</button>
+                    </div>
+
+                    <div id="add-form-wrap" style="display:none;">
+                        <form id="product-form">
+                            <div class="form-group">
+                                <label for="p-name">商品名 <span class="required">*</span></label>
+                                <input type="text" id="p-name" required placeholder="例: アリミノ クオライン 280">
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="p-price">価格(税込) <span class="required">*</span></label>
+                                    <input type="number" id="p-price" required placeholder="2480" min="0">
+                                </div>
+                                <div class="form-group">
+                                    <label for="p-stock">在庫数</label>
+                                    <input type="number" id="p-stock" value="50" min="0">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="p-category">カテゴリ <span class="required">*</span></label>
+                                    <input type="text" id="p-category" required placeholder="例: クオライン" list="cat-list">
+                                    <datalist id="cat-list"></datalist>
+                                </div>
+                                <div class="form-group">
+                                    <label for="p-jan">JANコード</label>
+                                    <input type="text" id="p-jan" placeholder="4901275014807">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="p-image">画像URL</label>
+                                <input type="url" id="p-image" placeholder="https://...">
+                            </div>
+                            <div id="product-error" class="auth-error" style="display:none;"></div>
+                            <div id="product-success" class="auth-success" style="display:none;"></div>
+                            <div class="form-actions">
+                                <button type="button" class="cancel-btn" id="cancel-add">キャンセル</button>
+                                <button type="submit" class="submit-btn submit-btn-sm">
+                                    <span class="btn-text">登録</span>
+                                    <span class="btn-loading" style="display:none;">登録中...</span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <input type="text" class="admin-search" id="product-search" placeholder="🔍 商品名で検索...">
+                    <div id="product-list">
+                        <div class="loading-state">
+                            <div class="spinner"></div>
+                            <p>読み込み中...</p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- ═══════════════ 顧客管理パネル ═══════════════ -->
+            <div class="admin-panel" id="panel-customers">
+                <section class="mypage-section">
+                    <h2>登録顧客一覧 <span id="customer-count" class="product-count-badge">0</span></h2>
+                    <input type="text" class="admin-search" id="customer-search" placeholder="🔍 顧客名・会社名で検索...">
+                    <div id="customer-list">
+                        <div class="loading-state">
+                            <div class="spinner"></div>
+                            <p>読み込み中...</p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- ═══════════════ 注文管理パネル ═══════════════ -->
+            <div class="admin-panel" id="panel-orders">
+                <section class="mypage-section">
+                    <h2>注文一覧 <span id="order-count" class="product-count-badge">0</span></h2>
+                    <div style="display:flex;gap:0.5rem;margin-bottom:1rem;flex-wrap:wrap;">
+                        <button class="filter-chip active order-filter" data-status="all">すべて</button>
+                        <button class="filter-chip order-filter" data-status="未処理">未処理</button>
+                        <button class="filter-chip order-filter" data-status="処理済">処理済</button>
+                        <button class="filter-chip order-filter" data-status="発送済">発送済</button>
+                    </div>
+                    <div id="order-list">
+                        <div class="loading-state">
+                            <div class="spinner"></div>
+                            <p>読み込み中...</p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- ═══════════════ アカウント管理パネル ═══════════════ -->
+            <div class="admin-panel" id="panel-account">
+                <!-- アカウント情報（コンパクト） -->
+                <section class="mypage-section">
+                    <h2>管理者情報</h2>
+                    <div id="account-info" style="font-size:0.82rem;">
+                        <div class="loading-state">
+                            <div class="spinner"></div>
+                            <p>読み込み中...</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 権限管理（メイン機能） -->
+                <section class="mypage-section">
+                    <h2>権限管理</h2>
+                    <p style="font-size:0.78rem;color:var(--text-light);margin-bottom:0.75rem;">ユーザーに管理者権限を付与・解除できます。
+                    </p>
+                    <div id="permission-list">
+                        <div class="loading-state">
+                            <div class="spinner"></div>
+                            <p>読み込み中...</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- パスワード変更（折りたたみ） -->
+                <section class="mypage-section">
+                    <details>
+                        <summary style="cursor:pointer;font-weight:600;font-size:0.9rem;color:var(--text-dark);">🔒
+                            パスワード変更</summary>
+                        <form id="password-form" style="margin-top:0.75rem;">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="new-password">新しいパスワード</label>
+                                    <input type="password" id="new-password" required minlength="6" placeholder="6文字以上">
+                                </div>
+                                <div class="form-group">
+                                    <label for="confirm-password">確認</label>
+                                    <input type="password" id="confirm-password" required minlength="6"
+                                        placeholder="再入力">
+                                </div>
+                            </div>
+                            <div id="pw-error" class="auth-error" style="display:none;"></div>
+                            <div id="pw-success" class="auth-success" style="display:none;"></div>
+                            <button type="submit" class="submit-btn submit-btn-sm"
+                                style="margin-top:0.3rem;">更新</button>
+                        </form>
+                    </details>
+                </section>
+
+            </div>
+
+            <!-- ═══════════════ リンク集パネル ═══════════════ -->
+            <div class="admin-panel" id="panel-links">
+                <section class="mypage-section">
+                    <h2>🛍 ショップ（顧客向け）</h2>
+                    <div style="display:flex;flex-direction:column;gap:0.5rem;font-size:0.85rem;">
+                        <a href="/" target="_blank"
+                            style="display:flex;align-items:center;gap:0.5rem;padding:0.6rem 0.75rem;border:1px solid var(--border-light);border-radius:8px;text-decoration:none;color:var(--text-dark);transition:all 0.15s;">
+                            <span style="font-size:1.1rem;">🏠</span>
+                            <div>
+                                <div style="font-weight:600;">トップページ</div>
+                                <div style="font-size:0.72rem;color:var(--text-light);">/</div>
+                            </div>
+                        </a>
+                        <a href="/login.html" target="_blank"
+                            style="display:flex;align-items:center;gap:0.5rem;padding:0.6rem 0.75rem;border:1px solid var(--border-light);border-radius:8px;text-decoration:none;color:var(--text-dark);transition:all 0.15s;">
+                            <span style="font-size:1.1rem;">👤</span>
+                            <div>
+                                <div style="font-weight:600;">会員ログイン・新規登録</div>
+                                <div style="font-size:0.72rem;color:var(--text-light);">/login.html</div>
+                            </div>
+                        </a>
+                        <a href="/mypage.html" target="_blank"
+                            style="display:flex;align-items:center;gap:0.5rem;padding:0.6rem 0.75rem;border:1px solid var(--border-light);border-radius:8px;text-decoration:none;color:var(--text-dark);transition:all 0.15s;">
+                            <span style="font-size:1.1rem;">📄</span>
+                            <div>
+                                <div style="font-weight:600;">マイページ</div>
+                                <div style="font-size:0.72rem;color:var(--text-light);">/mypage.html（配送先管理・注文履歴）</div>
+                            </div>
+                        </a>
+                        <a href="/cart.html" target="_blank"
+                            style="display:flex;align-items:center;gap:0.5rem;padding:0.6rem 0.75rem;border:1px solid var(--border-light);border-radius:8px;text-decoration:none;color:var(--text-dark);transition:all 0.15s;">
+                            <span style="font-size:1.1rem;">🛒</span>
+                            <div>
+                                <div style="font-weight:600;">注文手続き（カート）</div>
+                                <div style="font-size:0.72rem;color:var(--text-light);">/cart.html</div>
+                            </div>
+                        </a>
+                    </div>
+                </section>
+                <section class="mypage-section">
+                    <h2>🛡 管理者用</h2>
+                    <div style="display:flex;flex-direction:column;gap:0.5rem;font-size:0.85rem;">
+                        <a href="/admin.html"
+                            style="display:flex;align-items:center;gap:0.5rem;padding:0.6rem 0.75rem;border:1px solid var(--primary);border-radius:8px;text-decoration:none;color:var(--primary);background:rgba(108,92,231,0.04);">
+                            <span style="font-size:1.1rem;">📊</span>
+                            <div>
+                                <div style="font-weight:600;">管理ダッシュボード</div>
+                                <div style="font-size:0.72rem;color:var(--text-light);">/admin.html（このページ）</div>
+                            </div>
+                        </a>
+                        <a href="/admin-login.html" target="_blank"
+                            style="display:flex;align-items:center;gap:0.5rem;padding:0.6rem 0.75rem;border:1px solid var(--border-light);border-radius:8px;text-decoration:none;color:var(--text-dark);">
+                            <span style="font-size:1.1rem;">🔑</span>
+                            <div>
+                                <div style="font-weight:600;">管理者ログイン</div>
+                                <div style="font-size:0.72rem;color:var(--text-light);">/admin-login.html</div>
+                            </div>
+                        </a>
+                        <a href="/admin-setup.html" target="_blank"
+                            style="display:flex;align-items:center;gap:0.5rem;padding:0.6rem 0.75rem;border:1px solid var(--border-light);border-radius:8px;text-decoration:none;color:var(--text-dark);">
+                            <span style="font-size:1.1rem;">⚡</span>
+                            <div>
+                                <div style="font-weight:600;">管理者権限の初期設定</div>
+                                <div style="font-size:0.72rem;color:var(--text-light);">/admin-setup.html（初回のみ）</div>
+                            </div>
+                        </a>
+                        <a href="/jan-cleanup.html" target="_blank"
+                            style="display:flex;align-items:center;gap:0.5rem;padding:0.6rem 0.75rem;border:1px solid var(--border-light);border-radius:8px;text-decoration:none;color:var(--text-dark);">
+                            <span style="font-size:1.1rem;">🧹</span>
+                            <div>
+                                <div style="font-weight:600;">JANコード重複クリーンアップ</div>
+                                <div style="font-size:0.72rem;color:var(--text-light);">/jan-cleanup.html</div>
+                            </div>
+                        </a>
+                    </div>
+                </section>
+                <section class="mypage-section">
+                    <h2>🔧 Firebase コンソール</h2>
+                    <div style="display:flex;flex-direction:column;gap:0.5rem;font-size:0.85rem;">
+                        <a href="https://console.firebase.google.com/project/nakaoka-ec/firestore" target="_blank"
+                            style="display:flex;align-items:center;gap:0.5rem;padding:0.6rem 0.75rem;border:1px solid var(--border-light);border-radius:8px;text-decoration:none;color:var(--text-mid);">
+                            <span style="font-size:1.1rem;">📊</span>
+                            <div>
+                                <div style="font-weight:600;">Firestore データベース ↗</div>
+                            </div>
+                        </a>
+                        <a href="https://console.firebase.google.com/project/nakaoka-ec/authentication" target="_blank"
+                            style="display:flex;align-items:center;gap:0.5rem;padding:0.6rem 0.75rem;border:1px solid var(--border-light);border-radius:8px;text-decoration:none;color:var(--text-mid);">
+                            <span style="font-size:1.1rem;">👤</span>
+                            <div>
+                                <div style="font-weight:600;">認証管理 ↗</div>
+                            </div>
+                        </a>
+                        <a href="https://console.firebase.google.com/project/nakaoka-ec/hosting" target="_blank"
+                            style="display:flex;align-items:center;gap:0.5rem;padding:0.6rem 0.75rem;border:1px solid var(--border-light);border-radius:8px;text-decoration:none;color:var(--text-mid);">
+                            <span style="font-size:1.1rem;">🚀</span>
+                            <div>
+                                <div style="font-weight:600;">Hosting ↗</div>
+                            </div>
+                        </a>
+                    </div>
+                </section>
+            </div>
+
+            <!-- ═══════════════ 売上分析パネル ═══════════════ -->
+            <div class="admin-panel" id="panel-analytics">
+                <section class="mypage-section">
+                    <h2>📊 月別売上推移</h2>
+                    <p style="font-size:0.72rem;color:var(--text-light);margin-bottom:0.75rem;">直近12ヶ月の売上をグラフで表示</p>
+                    <div id="monthly-chart"
+                        style="display:flex;align-items:flex-end;gap:4px;height:180px;padding:0.5rem 0;border-bottom:1px solid var(--border-light);">
+                    </div>
+                    <div id="monthly-labels" style="display:flex;gap:4px;padding-top:0.3rem;"></div>
+                </section>
+
+                <section class="mypage-section">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem;">
+                        <h2>🏆 月別売上詳細</h2>
+                        <select id="analytics-month"
+                            style="padding:0.3rem 0.6rem;border:1px solid var(--border);border-radius:6px;font-size:0.8rem;font-family:var(--font-sans);"></select>
+                    </div>
+                    <div id="month-summary"
+                        style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.5rem;margin-bottom:1rem;"></div>
+                    <h3 style="font-size:0.85rem;font-weight:600;color:var(--text-dark);margin-bottom:0.5rem;">売れ筋ランキング
+                    </h3>
+                    <div id="month-product-ranking"></div>
+                </section>
+
+                <section class="mypage-section">
+                    <h2>🗾 エリア別売上</h2>
+                    <p style="font-size:0.72rem;color:var(--text-light);margin-bottom:0.75rem;">発送先住所から地域ごとの売上を集計</p>
+                    <div id="regional-sales"></div>
+                </section>
+            </div>
+
+        </div><!-- end admin-content -->
+    </main>
+
+    <footer class="ec-footer">
+        <p>&copy; 2026 中岡商会 All Rights Reserved.</p>
+    </footer>
+
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+    <script src="/js/firebase-config.js"></script>
+    <script src="/js/auth.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const user = await Auth.requireAuth('/admin-login.html');
+
+            // ── 管理者/運用者権限チェック ──
+            const userDoc = await db.collection('users').doc(user.uid).get();
+            const userData = userDoc.exists ? userDoc.data() : {};
+            const currentRole = userData.role;
+            if (currentRole !== 'admin' && currentRole !== 'operator') {
+                document.getElementById('access-denied').style.display = 'block';
+                document.querySelector('.stats-bar').style.display = 'none';
+                document.querySelector('.admin-tabs').style.display = 'none';
+                document.getElementById('admin-content').style.display = 'none';
+                return;
+            }
+            // 権限確認OK → ダッシュボード表示
+            document.getElementById('admin-content').style.display = 'block';
+            document.querySelector('.stats-bar').style.display = 'grid';
+
+            // 運用者は顧客管理・アカウントタブを非表示
+            if (currentRole === 'operator') {
+                document.querySelectorAll('.admin-tab').forEach(tab => {
+                    if (['customers', 'account'].includes(tab.dataset.panel)) tab.style.display = 'none';
+                });
+            }
+
+            // ── Tab Navigation ──
+            const tabs = document.querySelectorAll('.admin-tab');
+            const panels = document.querySelectorAll('.admin-panel');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    panels.forEach(p => p.classList.remove('active'));
+                    tab.classList.add('active');
+                    document.getElementById('panel-' + tab.dataset.panel).classList.add('active');
+                });
+            });
+
+            // ══════════════════════════════════════
+            // 1. 商品管理
+            // ══════════════════════════════════════
+            let allProducts = [];
+
+            async function loadProducts() {
+                const listEl = document.getElementById('product-list');
+                const countEl = document.getElementById('product-count');
+                try {
+                    const snap = await db.collection('products').orderBy('category').get();
+                    allProducts = [];
+                    const cats = new Set();
+                    snap.forEach(doc => { const d = doc.data(); allProducts.push({ id: doc.id, ...d }); if (d.category) cats.add(d.category); });
+                    countEl.textContent = allProducts.length;
+                    document.getElementById('stat-products').textContent = allProducts.length;
+
+                    const dl = document.getElementById('cat-list');
+                    dl.innerHTML = '';
+                    cats.forEach(c => { const o = document.createElement('option'); o.value = c; dl.appendChild(o); });
+
+                    renderProducts(allProducts);
+                } catch (err) {
+                    listEl.innerHTML = '<p class="empty-orders">商品の取得に失敗しました。</p>';
+                }
+            }
+
+            const PAGE_SIZE = 50;
+            let currentPage = 1;
+
+            function renderProducts(products) {
+                const listEl = document.getElementById('product-list');
+                if (products.length === 0) { listEl.innerHTML = '<p class="empty-orders">該当する商品がありません。</p>'; return; }
+
+                const dups = new Map();
+                const janDups = new Map();
+                products.forEach(p => {
+                    if (!dups.has(p.name)) dups.set(p.name, []);
+                    dups.get(p.name).push(p.id);
+                    if (p.jan) {
+                        if (!janDups.has(p.jan)) janDups.set(p.jan, []);
+                        janDups.get(p.jan).push(p.id);
+                    }
+                });
+
+                const visible = products.slice(0, currentPage * PAGE_SIZE);
+                const hasMore = products.length > visible.length;
+                const esc = s => (s || '').replace(/"/g, '&quot;');
+
+                const rows = visible.map(p => {
+                    const isDup = dups.get(p.name) && dups.get(p.name).length > 1;
+                    const isJanDup = p.jan && janDups.get(p.jan) && janDups.get(p.jan).length > 1;
+                    const warn = isDup || isJanDup ? 'background:#fff5f5;' : '';
+                    return `<tr style="${warn}" data-pid="${p.id}">
+                        <td style="width:36px;padding:4px;">${p.imageUrl ? `<img src="${p.imageUrl}" alt="" style="width:32px;height:32px;object-fit:cover;border-radius:4px;">` : '<span style="color:#cbd5e0;">📷</span>'}</td>
+                        <td style="font-weight:500;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${p.name}${isDup ? ' <span class="dup-badge">重複</span>' : ''}${isJanDup ? ' <span class="dup-badge" style="background:#fc8181;">JAN</span>' : ''}</td>
+                        <td style="text-align:right;">¥${(p.price || 0).toLocaleString()}</td>
+                        <td style="text-align:center;">${p.stock ?? '-'}</td>
+                        <td><span class="admin-category-tag" style="margin:0;">${p.category || '-'}</span></td>
+                        <td style="font-size:0.68rem;color:var(--text-light);">${p.jan || '-'}</td>
+                        <td style="white-space:nowrap;">
+                            <button class="edit-btn prod-edit-toggle" data-id="${p.id}" style="font-size:0.65rem;padding:2px 6px;margin-right:2px;">編集</button>
+                            <button class="delete-product-btn" data-id="${p.id}" data-name="${esc(p.name)}" style="font-size:0.65rem;padding:2px 6px;background:#fff5f5;color:#e53e3e;border:1px solid #fed7d7;border-radius:4px;cursor:pointer;">削除</button>
+                        </td>
+                    </tr>
+                    <tr class="prod-edit-row" id="pedit-${p.id}" style="display:none;">
+                        <td colspan="7" style="padding:0.5rem;background:#f7fafc;">
+                            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.3rem;">
+                                <div style="grid-column:span 3;"><label style="font-size:0.62rem;color:#718096;">商品名</label><input class="pe-name" value="${esc(p.name)}" style="width:100%;padding:0.25rem 0.4rem;border:1px solid #e2e8f0;border-radius:4px;font-size:0.78rem;font-family:inherit;box-sizing:border-box;"></div>
+                                <div><label style="font-size:0.62rem;color:#718096;">価格</label><input type="number" class="pe-price" value="${p.price || 0}" min="0" style="width:100%;padding:0.25rem 0.4rem;border:1px solid #e2e8f0;border-radius:4px;font-size:0.78rem;font-family:inherit;box-sizing:border-box;"></div>
+                                <div><label style="font-size:0.62rem;color:#718096;">在庫</label><input type="number" class="pe-stock" value="${p.stock || 0}" min="0" style="width:100%;padding:0.25rem 0.4rem;border:1px solid #e2e8f0;border-radius:4px;font-size:0.78rem;font-family:inherit;box-sizing:border-box;"></div>
+                                <div><label style="font-size:0.62rem;color:#718096;">カテゴリ</label><input class="pe-category" value="${esc(p.category)}" style="width:100%;padding:0.25rem 0.4rem;border:1px solid #e2e8f0;border-radius:4px;font-size:0.78rem;font-family:inherit;box-sizing:border-box;"></div>
+                                <div><label style="font-size:0.62rem;color:#718096;">JAN</label><input class="pe-jan" value="${esc(p.jan)}" style="width:100%;padding:0.25rem 0.4rem;border:1px solid #e2e8f0;border-radius:4px;font-size:0.78rem;font-family:inherit;box-sizing:border-box;"></div>
+                                <div style="grid-column:span 2;"><label style="font-size:0.62rem;color:#718096;">画像URL</label><input class="pe-image" value="${esc(p.imageUrl)}" style="width:100%;padding:0.25rem 0.4rem;border:1px solid #e2e8f0;border-radius:4px;font-size:0.78rem;font-family:inherit;box-sizing:border-box;"></div>
+                            </div>
+                            <div style="margin-top:0.3rem;display:flex;gap:0.3rem;">
+                                <button class="prod-save-btn submit-btn submit-btn-sm" data-id="${p.id}" style="flex:1;font-size:0.72rem;padding:0.25rem;">保存</button>
+                                <button class="prod-cancel-btn" data-id="${p.id}" style="flex:1;padding:0.25rem;border:1px solid #e2e8f0;border-radius:4px;background:#fff;color:#718096;font-size:0.72rem;cursor:pointer;font-family:inherit;">キャンセル</button>
+                            </div>
+                            <div class="prod-edit-msg" style="display:none;margin-top:0.2rem;font-size:0.7rem;border-radius:4px;padding:0.2rem 0.4rem;"></div>
+                        </td>
+                    </tr>`;
+                }).join('');
+
+                listEl.innerHTML = `<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;font-size:0.78rem;">
+                    <thead><tr style="background:#f7fafc;border-bottom:2px solid #e2e8f0;">
+                        <th style="padding:6px 4px;text-align:left;font-weight:600;font-size:0.7rem;color:#718096;"></th>
+                        <th style="padding:6px 4px;text-align:left;font-weight:600;font-size:0.7rem;color:#718096;">商品名</th>
+                        <th style="padding:6px 4px;text-align:right;font-weight:600;font-size:0.7rem;color:#718096;">価格</th>
+                        <th style="padding:6px 4px;text-align:center;font-weight:600;font-size:0.7rem;color:#718096;">在庫</th>
+                        <th style="padding:6px 4px;text-align:left;font-weight:600;font-size:0.7rem;color:#718096;">カテゴリ</th>
+                        <th style="padding:6px 4px;text-align:left;font-weight:600;font-size:0.7rem;color:#718096;">JAN</th>
+                        <th style="padding:6px 4px;text-align:left;font-weight:600;font-size:0.7rem;color:#718096;">操作</th>
+                    </tr></thead>
+                    <tbody>${rows}</tbody>
+                </table></div>` + (hasMore ? `
+                    <button id="load-more-btn" style="width:100%;padding:0.5rem;border:1px solid var(--border);border-radius:6px;background:#fff;color:var(--text-mid);font-size:0.82rem;cursor:pointer;font-family:var(--font-sans);margin-top:0.3rem;">
+                        さらに表示（残り ${products.length - visible.length} 件）
+                    </button>` : `<p style="text-align:center;font-size:0.7rem;color:var(--text-light);margin-top:0.4rem;">${products.length}件 すべて表示</p>`);
+
+                // Delete
+                listEl.querySelectorAll('.delete-product-btn').forEach(btn => {
+                    btn.addEventListener('click', async () => {
+                        if (!confirm(`「${btn.dataset.name}」を削除しますか？`)) return;
+                        try { await db.collection('products').doc(btn.dataset.id).delete(); loadProducts(); }
+                        catch (err) { alert('削除失敗: ' + err.message); }
+                    });
+                });
+
+                // Toggle edit
+                listEl.querySelectorAll('.prod-edit-toggle').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const form = document.getElementById('pedit-' + btn.dataset.id);
+                        const show = form.style.display === 'none';
+                        listEl.querySelectorAll('.prod-edit-row').forEach(f => f.style.display = 'none');
+                        listEl.querySelectorAll('.prod-edit-toggle').forEach(b => b.textContent = '編集');
+                        if (show) { form.style.display = 'table-row'; btn.textContent = '閉じる'; }
+                    });
+                });
+
+                // Save edit
+                listEl.querySelectorAll('.prod-save-btn').forEach(btn => {
+                    btn.addEventListener('click', async () => {
+                        const id = btn.dataset.id;
+                        const form = document.getElementById('pedit-' + id);
+                        const msgEl = form.querySelector('.prod-edit-msg');
+                        btn.disabled = true; btn.textContent = '保存中...';
+                        try {
+                            await db.collection('products').doc(id).update({
+                                name: form.querySelector('.pe-name').value,
+                                price: Number(form.querySelector('.pe-price').value),
+                                stock: Number(form.querySelector('.pe-stock').value),
+                                category: form.querySelector('.pe-category').value,
+                                jan: form.querySelector('.pe-jan').value,
+                                imageUrl: form.querySelector('.pe-image').value,
+                            });
+                            msgEl.textContent = '✓ 保存しました';
+                            msgEl.style.display = 'block'; msgEl.style.background = '#f0fff4'; msgEl.style.color = '#276749';
+                            setTimeout(() => loadProducts(), 500);
+                        } catch (err) {
+                            msgEl.textContent = '保存失敗: ' + err.message;
+                            msgEl.style.display = 'block'; msgEl.style.background = '#fff5f5'; msgEl.style.color = '#c53030';
+                            btn.disabled = false; btn.textContent = '保存';
+                        }
+                    });
+                });
+
+                // Cancel edit
+                listEl.querySelectorAll('.prod-cancel-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        document.getElementById('pedit-' + btn.dataset.id).style.display = 'none';
+                        const toggle = listEl.querySelector(`.prod-edit-toggle[data-id="${btn.dataset.id}"]`);
+                        if (toggle) toggle.textContent = '編集';
+                    });
+                });
+
+                // Load more
+                const moreBtn = document.getElementById('load-more-btn');
+                if (moreBtn) {
+                    moreBtn.addEventListener('click', () => { currentPage++; renderProducts(products); });
+                }
+            }
+
+            // Product search
+            document.getElementById('product-search').addEventListener('input', (e) => {
+                const q = e.target.value.toLowerCase();
+                currentPage = 1;
+                renderProducts(q ? allProducts.filter(p => p.name.toLowerCase().includes(q) || (p.category || '').toLowerCase().includes(q)) : allProducts);
+            });
+
+            // Add product form
+            const toggleBtn = document.getElementById('toggle-add-form');
+            const formWrap = document.getElementById('add-form-wrap');
+            toggleBtn.addEventListener('click', () => {
+                formWrap.style.display = formWrap.style.display === 'none' ? 'block' : 'none';
+                toggleBtn.textContent = formWrap.style.display === 'none' ? '+ 新規追加' : '− 閉じる';
+            });
+            document.getElementById('cancel-add').addEventListener('click', () => {
+                formWrap.style.display = 'none'; toggleBtn.textContent = '+ 新規追加';
+            });
+
+            document.getElementById('product-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const errEl = document.getElementById('product-error');
+                const sucEl = document.getElementById('product-success');
+                const btn = e.target.querySelector('.submit-btn');
+                errEl.style.display = sucEl.style.display = 'none';
+                btn.disabled = true;
+                btn.querySelector('.btn-text').style.display = 'none';
+                btn.querySelector('.btn-loading').style.display = 'inline';
+                try {
+                    const np = {
+                        name: document.getElementById('p-name').value.trim(),
+                        price: parseInt(document.getElementById('p-price').value, 10),
+                        stock: parseInt(document.getElementById('p-stock').value, 10) || 0,
+                        category: document.getElementById('p-category').value.trim(),
+                        jan: document.getElementById('p-jan').value.trim(),
+                        imageUrl: document.getElementById('p-image').value.trim(),
+                        visible: true, caseJan: '', caseQty: 0,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    };
+                    const ex = await db.collection('products').where('name', '==', np.name).get();
+                    if (!ex.empty) { errEl.textContent = `「${np.name}」は既に登録済みです。`; errEl.style.display = 'block'; }
+                    else if (np.jan) {
+                        const janEx = await db.collection('products').where('jan', '==', np.jan).get();
+                        if (!janEx.empty) {
+                            const existing = janEx.docs[0].data();
+                            errEl.textContent = `JANコード「${np.jan}」は既に「${existing.name}」で使用されています。`;
+                            errEl.style.display = 'block';
+                        } else {
+                            await db.collection('products').add(np); sucEl.textContent = `「${np.name}」を登録しました。`; sucEl.style.display = 'block'; e.target.reset(); document.getElementById('p-stock').value = '50'; loadProducts(); setTimeout(() => sucEl.style.display = 'none', 3000);
+                        }
+                    }
+                    else { await db.collection('products').add(np); sucEl.textContent = `「${np.name}」を登録しました。`; sucEl.style.display = 'block'; e.target.reset(); document.getElementById('p-stock').value = '50'; loadProducts(); setTimeout(() => sucEl.style.display = 'none', 3000); }
+                } catch (err) { errEl.textContent = '登録失敗: ' + err.message; errEl.style.display = 'block'; }
+                btn.disabled = false;
+                btn.querySelector('.btn-text').style.display = 'inline';
+                btn.querySelector('.btn-loading').style.display = 'none';
+            });
+
+            // ══════════════════════════════════════
+            // 2. 顧客管理
+            // ══════════════════════════════════════
+            let allCustomers = [];
+
+            async function loadCustomers() {
+                const listEl = document.getElementById('customer-list');
+                const countEl = document.getElementById('customer-count');
+                try {
+                    const snap = await db.collection('users').get();
+                    allCustomers = [];
+                    snap.forEach(doc => {
+                        const d = doc.data();
+                        // 管理者・運用者アカウントを除外（顧客のみ表示）
+                        if (d.role === 'admin' || d.role === 'operator') return;
+                        allCustomers.push({ id: doc.id, ...d });
+                    });
+                    countEl.textContent = allCustomers.length;
+                    document.getElementById('stat-customers').textContent = allCustomers.length;
+                    renderCustomers(allCustomers);
+                } catch (err) {
+                    listEl.innerHTML = '<p class="empty-orders">顧客データの取得に失敗しました。</p>';
+                }
+            }
+
+            function renderCustomers(customers) {
+                const listEl = document.getElementById('customer-list');
+                if (customers.length === 0) { listEl.innerHTML = '<p class="empty-orders">登録顧客がいません。</p>'; return; }
+                const esc = s => (s || '').replace(/"/g, '&quot;');
+
+                const rows = customers.map(c => {
+                    const date = c.createdAt ? new Date(c.createdAt.seconds * 1000).toLocaleDateString('ja-JP') : '-';
+                    return `<tr data-cid="${c.id}">
+                        <td style="font-weight:500;white-space:nowrap;">${c.company || '-'}</td>
+                        <td>${c.name || '-'}</td>
+                        <td style="font-size:0.72rem;">${c.email || '-'}</td>
+                        <td style="white-space:nowrap;">${c.phone || '-'}</td>
+                        <td style="font-size:0.72rem;">〒${c.zip || '-'} ${c.address || '-'}</td>
+                        <td style="font-size:0.68rem;color:var(--text-light);white-space:nowrap;">${date}</td>
+                        <td><button class="edit-btn cust-edit-toggle" data-id="${c.id}" style="font-size:0.65rem;padding:2px 6px;">編集</button></td>
+                    </tr>
+                    <tr class="cust-edit-row" id="edit-${c.id}" style="display:none;">
+                        <td colspan="7" style="padding:0.5rem;background:#f7fafc;">
+                            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.3rem;">
+                                <div><label style="font-size:0.62rem;color:#718096;">会社名/サロン名</label><input class="ce-company" value="${esc(c.company)}" style="width:100%;padding:0.25rem 0.4rem;border:1px solid #e2e8f0;border-radius:4px;font-size:0.78rem;font-family:inherit;box-sizing:border-box;"></div>
+                                <div><label style="font-size:0.62rem;color:#718096;">担当者名</label><input class="ce-name" value="${esc(c.name)}" style="width:100%;padding:0.25rem 0.4rem;border:1px solid #e2e8f0;border-radius:4px;font-size:0.78rem;font-family:inherit;box-sizing:border-box;"></div>
+                                <div><label style="font-size:0.62rem;color:#718096;">電話番号</label><input class="ce-phone" value="${esc(c.phone)}" style="width:100%;padding:0.25rem 0.4rem;border:1px solid #e2e8f0;border-radius:4px;font-size:0.78rem;font-family:inherit;box-sizing:border-box;"></div>
+                                <div><label style="font-size:0.62rem;color:#718096;">郵便番号</label><input class="ce-zip" value="${esc(c.zip)}" style="width:100%;padding:0.25rem 0.4rem;border:1px solid #e2e8f0;border-radius:4px;font-size:0.78rem;font-family:inherit;box-sizing:border-box;"></div>
+                                <div style="grid-column:span 2;"><label style="font-size:0.62rem;color:#718096;">住所</label><input class="ce-address" value="${esc(c.address)}" style="width:100%;padding:0.25rem 0.4rem;border:1px solid #e2e8f0;border-radius:4px;font-size:0.78rem;font-family:inherit;box-sizing:border-box;"></div>
+                            </div>
+                            <div style="margin-top:0.3rem;display:flex;gap:0.3rem;">
+                                <button class="cust-save-btn submit-btn submit-btn-sm" data-id="${c.id}" style="flex:1;font-size:0.72rem;padding:0.25rem;">保存</button>
+                                <button class="cust-cancel-btn" data-id="${c.id}" style="flex:1;padding:0.25rem;border:1px solid #e2e8f0;border-radius:4px;background:#fff;color:#718096;font-size:0.72rem;cursor:pointer;font-family:inherit;">キャンセル</button>
+                            </div>
+                            <div class="cust-edit-msg" style="display:none;margin-top:0.2rem;font-size:0.7rem;border-radius:4px;padding:0.2rem 0.4rem;"></div>
+                        </td>
+                    </tr>`;
+                }).join('');
+
+                listEl.innerHTML = `<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;font-size:0.78rem;">
+                    <thead><tr style="background:#f7fafc;border-bottom:2px solid #e2e8f0;">
+                        <th style="padding:6px 4px;text-align:left;font-weight:600;font-size:0.7rem;color:#718096;">会社名</th>
+                        <th style="padding:6px 4px;text-align:left;font-weight:600;font-size:0.7rem;color:#718096;">担当者</th>
+                        <th style="padding:6px 4px;text-align:left;font-weight:600;font-size:0.7rem;color:#718096;">メール</th>
+                        <th style="padding:6px 4px;text-align:left;font-weight:600;font-size:0.7rem;color:#718096;">電話</th>
+                        <th style="padding:6px 4px;text-align:left;font-weight:600;font-size:0.7rem;color:#718096;">住所</th>
+                        <th style="padding:6px 4px;text-align:left;font-weight:600;font-size:0.7rem;color:#718096;">登録</th>
+                        <th style="padding:6px 4px;text-align:left;font-weight:600;font-size:0.7rem;color:#718096;">操作</th>
+                    </tr></thead>
+                    <tbody>${rows}</tbody>
+                </table></div>`;
+
+                // Toggle edit
+                listEl.querySelectorAll('.cust-edit-toggle').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const form = document.getElementById('edit-' + btn.dataset.id);
+                        const show = form.style.display === 'none';
+                        listEl.querySelectorAll('.cust-edit-row').forEach(f => f.style.display = 'none');
+                        listEl.querySelectorAll('.cust-edit-toggle').forEach(b => b.textContent = '編集');
+                        if (show) { form.style.display = 'table-row'; btn.textContent = '閉じる'; }
+                    });
+                });
+
+                // Save
+                listEl.querySelectorAll('.cust-save-btn').forEach(btn => {
+                    btn.addEventListener('click', async () => {
+                        const id = btn.dataset.id;
+                        const form = document.getElementById('edit-' + id);
+                        const msgEl = form.querySelector('.cust-edit-msg');
+                        btn.disabled = true; btn.textContent = '保存中...';
+                        try {
+                            await db.collection('users').doc(id).update({
+                                company: form.querySelector('.ce-company').value,
+                                name: form.querySelector('.ce-name').value,
+                                phone: form.querySelector('.ce-phone').value,
+                                zip: form.querySelector('.ce-zip').value,
+                                address: form.querySelector('.ce-address').value,
+                            });
+                            msgEl.textContent = '✓ 保存しました';
+                            msgEl.style.display = 'block'; msgEl.style.background = '#f0fff4'; msgEl.style.color = '#276749';
+                            setTimeout(() => loadCustomers(), 500);
+                        } catch (err) {
+                            msgEl.textContent = '保存失敗: ' + err.message;
+                            msgEl.style.display = 'block'; msgEl.style.background = '#fff5f5'; msgEl.style.color = '#c53030';
+                            btn.disabled = false; btn.textContent = '保存';
+                        }
+                    });
+                });
+
+                // Cancel
+                listEl.querySelectorAll('.cust-cancel-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        document.getElementById('edit-' + btn.dataset.id).style.display = 'none';
+                        const toggle = listEl.querySelector(`.cust-edit-toggle[data-id="${btn.dataset.id}"]`);
+                        if (toggle) toggle.textContent = '編集';
+                    });
+                });
+            }
+
+            document.getElementById('customer-search').addEventListener('input', (e) => {
+                const q = e.target.value.toLowerCase();
+                renderCustomers(q ? allCustomers.filter(c =>
+                    (c.company || '').toLowerCase().includes(q) ||
+                    (c.name || '').toLowerCase().includes(q) ||
+                    (c.email || '').toLowerCase().includes(q)
+                ) : allCustomers);
+            });
+
+            // ══════════════════════════════════════
+            // 3. 注文管理
+            // ══════════════════════════════════════
+            let allOrders = [];
+            let orderFilter = 'all';
+
+            async function loadOrders() {
+                const listEl = document.getElementById('order-list');
+                const countEl = document.getElementById('order-count');
+                try {
+                    const snap = await db.collection('orders').orderBy('createdAt', 'desc').get();
+                    allOrders = [];
+                    let pending = 0;
+                    let revenue = 0;
+                    snap.forEach(doc => {
+                        const d = doc.data();
+                        allOrders.push({ id: doc.id, ...d });
+                        if (d.status === '未処理') pending++;
+                        if (d.status !== 'キャンセル') revenue += (d.total || 0);
+                    });
+                    countEl.textContent = allOrders.length;
+                    document.getElementById('stat-orders').textContent = allOrders.length;
+                    document.getElementById('stat-pending').textContent = pending;
+                    const revenueEl = document.getElementById('stat-revenue');
+                    if (revenueEl) revenueEl.textContent = '¥' + revenue.toLocaleString();
+                    renderOrders(orderFilter === 'all' ? allOrders : allOrders.filter(o => o.status === orderFilter));
+                } catch (err) {
+                    listEl.innerHTML = '<p class="empty-orders">注文データの取得に失敗しました。</p>';
+                }
+            }
+
+            function renderOrders(orders) {
+                const listEl = document.getElementById('order-list');
+                if (orders.length === 0) { listEl.innerHTML = '<p class="empty-orders">該当する注文がありません。</p>'; return; }
+                listEl.innerHTML = orders.map(o => {
+                    const date = o.createdAt ? new Date(o.createdAt.seconds * 1000).toLocaleString('ja-JP') : '-';
+                    const statusClass = 'status-' + (o.status || '未処理');
+                    const itemsHtml = (o.items || []).map(i =>
+                        `<div style="display:flex;justify-content:space-between;font-size:0.75rem;padding:0.15rem 0;">
+                            <span>${i.name} × ${i.qty}</span>
+                            <span style="color:var(--text-light);">¥${((i.price || 0) * i.qty).toLocaleString()}</span>
+                        </div>`
+                    ).join('');
+                    const addr = o.address || o.shippingAddress;
+                    const addrHtml = addr ? `
+                        <div style="font-size:0.72rem;color:var(--text-mid);margin-top:0.3rem;padding:0.4rem;background:#f7fafc;border-radius:6px;">
+                            📦 ${addr.label ? `<b>${addr.label}</b> ` : ''}〒${addr.zip || ''} ${addr.prefecture || ''}${addr.city || ''}${addr.line || addr.address || ''}
+                            ${addr.name ? ` (${addr.name})` : ''}${addr.phone ? ` TEL:${addr.phone}` : ''}
+                        </div>` : '';
+                    const subtotal = o.subtotal || o.total || 0;
+                    const shipping = o.shipping || 0;
+                    const total = o.total || 0;
+                    const hasFeeBreakdown = o.subtotal !== undefined;
+                    return `
+                    <div class="admin-order-card">
+                        <div class="admin-order-header">
+                            <div>
+                                <span class="admin-order-customer">${o.company || o.name || '-'}</span>
+                                <span class="status-badge ${statusClass}">${o.status || '未処理'}</span>
+                            </div>
+                            <span class="admin-order-date">${date}</span>
+                        </div>
+                        <div style="margin:0.3rem 0;">${itemsHtml || '<div style="font-size:0.75rem;color:var(--text-light);">商品情報なし</div>'}</div>
+                        ${addrHtml}
+                        <div class="admin-order-footer" style="flex-direction:column;gap:0.3rem;">
+                            <div style="display:flex;justify-content:space-between;align-items:center;width:100%;">
+                                <div style="font-size:0.78rem;">
+                                    ${hasFeeBreakdown ? `
+                                        <span style="color:var(--text-light);">小計: ¥${subtotal.toLocaleString()}</span>
+                                        <span style="color:var(--text-light);margin-left:0.5rem;">送料: ${shipping === 0 ? '<span style="color:#48bb78;">無料</span>' : '¥' + shipping.toLocaleString()}</span>
+                                        <span style="font-weight:700;margin-left:0.5rem;">合計: ¥${total.toLocaleString()}</span>
+                                    ` : `<span class="admin-order-total">¥${total.toLocaleString()}</span>`}
+                                </div>
+                                <select class="status-select" data-id="${o.id}" onchange="updateOrderStatus(this)">
+                                    <option value="未処理" ${o.status === '未処理' ? 'selected' : ''}>未処理</option>
+                                    <option value="処理済" ${o.status === '処理済' ? 'selected' : ''}>処理済</option>
+                                    <option value="発送済" ${o.status === '発送済' ? 'selected' : ''}>発送済</option>
+                                    <option value="キャンセル" ${o.status === 'キャンセル' ? 'selected' : ''}>キャンセル</option>
+                                </select>
+                            </div>
+                            ${o.notes ? `<div style="font-size:0.7rem;color:var(--text-light);width:100%;">📝 ${o.notes}</div>` : ''}
+                        </div>
+                    </div>`;
+                }).join('');
+            }
+
+            // Order status update
+            window.updateOrderStatus = async (select) => {
+                const orderId = select.dataset.id;
+                const newStatus = select.value;
+                try {
+                    await db.collection('orders').doc(orderId).update({ status: newStatus });
+                    // Update badge inline
+                    const card = select.closest('.admin-order-card');
+                    const badge = card.querySelector('.status-badge');
+                    badge.className = 'status-badge status-' + newStatus;
+                    badge.textContent = newStatus;
+                    // Update stats
+                    const pending = allOrders.filter(o => o.id === orderId ? newStatus === '未処理' : o.status === '未処理').length;
+                    document.getElementById('stat-pending').textContent = pending;
+                    // Update local data
+                    const order = allOrders.find(o => o.id === orderId);
+                    if (order) order.status = newStatus;
+                } catch (err) {
+                    alert('ステータス更新失敗: ' + err.message);
+                    select.value = allOrders.find(o => o.id === orderId)?.status || '未処理';
+                }
+            };
+
+            // Order filter
+            document.querySelectorAll('.order-filter').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.order-filter').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    orderFilter = btn.dataset.status;
+                    renderOrders(orderFilter === 'all' ? allOrders : allOrders.filter(o => o.status === orderFilter));
+                });
+            });
+
+            // ══════════════════════════════════════
+            // 4. アカウント管理
+            // ══════════════════════════════════════
+            function loadAccount() {
+                const infoEl = document.getElementById('account-info');
+                const profile = Auth.currentUser();
+                if (profile) {
+                    const lastLogin = profile.metadata?.lastSignInTime
+                        ? new Date(profile.metadata.lastSignInTime).toLocaleString('ja-JP')
+                        : '-';
+                    infoEl.innerHTML = `
+                    <div style="display:flex;align-items:center;gap:0.75rem;">
+                        <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--primary-hover));color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;">👑</div>
+                        <div>
+                            <div style="font-weight:600;color:var(--text-dark);">${profile.email}</div>
+                            <div style="font-size:0.72rem;color:var(--text-light);">最終ログイン: ${lastLogin}</div>
+                        </div>
+                    </div>`;
+                }
+            }
+
+            // Password change
+            document.getElementById('password-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const newPw = document.getElementById('new-password').value;
+                const confirmPw = document.getElementById('confirm-password').value;
+                const errEl = document.getElementById('pw-error');
+                const sucEl = document.getElementById('pw-success');
+                errEl.style.display = sucEl.style.display = 'none';
+
+                if (newPw !== confirmPw) { errEl.textContent = 'パスワードが一致しません。'; errEl.style.display = 'block'; return; }
+                try {
+                    await user.updatePassword(newPw);
+                    sucEl.textContent = 'パスワードを更新しました。';
+                    sucEl.style.display = 'block';
+                    e.target.reset();
+                    setTimeout(() => sucEl.style.display = 'none', 3000);
+                } catch (err) {
+                    errEl.textContent = 'パスワード変更に失敗しました: ' + err.message;
+                    errEl.style.display = 'block';
+                }
+            });
+
+            // ── ログアウト ──
+            document.getElementById('logout-btn').addEventListener('click', async () => {
+                await Auth.logout();
+                window.location.href = '/';
+            });
+
+            // ══════════════════════════════════════
+            // 5. 権限管理
+            // ══════════════════════════════════════
+            async function loadPermissions() {
+                const listEl = document.getElementById('permission-list');
+                try {
+                    const snap = await db.collection('users').get();
+                    const users = [];
+                    snap.forEach(doc => users.push({ id: doc.id, ...doc.data() }));
+
+                    if (users.length === 0) { listEl.innerHTML = '<p class="empty-orders">登録ユーザーがいません。</p>'; return; }
+
+                    listEl.innerHTML = users.map(u => {
+                        const isSelf = u.id === user.uid;
+                        const roleLabel = u.role === 'admin' ? '管理者' : u.role === 'operator' ? '運用者' : '顧客';
+                        const roleIcon = u.role === 'admin' ? '👑' : u.role === 'operator' ? '🛠' : (u.company || u.name || u.email || '?').charAt(0).toUpperCase();
+                        const roleColor = u.role === 'admin' ? 'linear-gradient(135deg,#48bb78,#276749)' : u.role === 'operator' ? 'linear-gradient(135deg,#f6ad55,#dd6b20)' : '';
+                        return `
+                        <div class="customer-card">
+                            <div class="customer-avatar" style="${roleColor ? 'background:' + roleColor + ';' : ''}">
+                                ${roleIcon}
+                            </div>
+                            <div class="customer-info" style="flex:1;">
+                                <div class="customer-name">${u.company || '-'} / ${u.name || '-'}</div>
+                                <div class="customer-meta">${u.email || '-'}</div>
+                            </div>
+                            <div style="flex-shrink:0;">
+                                ${isSelf
+                                ? `<span class="role-toggle is-admin" style="cursor:default;">自分（${roleLabel}）</span>`
+                                : `<select class="role-select-perm" data-uid="${u.id}" style="padding:0.3rem 0.5rem;border:1px solid #e2e8f0;border-radius:6px;font-size:0.75rem;font-family:var(--font-sans);">
+                                    <option value="customer" ${u.role !== 'admin' && u.role !== 'operator' ? 'selected' : ''}>顧客</option>
+                                    <option value="operator" ${u.role === 'operator' ? 'selected' : ''}>運用者</option>
+                                    <option value="admin" ${u.role === 'admin' ? 'selected' : ''}>管理者</option>
+                                </select>`
+                            }
+                            </div>
+                        </div>`;
+                    }).join('');
+
+                    // Role change handler
+                    listEl.querySelectorAll('.role-select-perm').forEach(sel => {
+                        sel.addEventListener('change', async () => {
+                            const uid = sel.dataset.uid;
+                            const newRole = sel.value;
+                            const labels = { admin: '管理者', operator: '運用者', customer: '顧客' };
+                            if (!confirm(`このユーザーの権限を「${labels[newRole]}」に変更しますか？`)) {
+                                loadPermissions();
+                                return;
+                            }
+                            try {
+                                await db.collection('users').doc(uid).update({ role: newRole });
+                                loadPermissions();
+                                loadCustomers();
+                            } catch (err) {
+                                alert('権限変更に失敗しました: ' + err.message);
+                                loadPermissions();
+                            }
+                        });
+                    });
+                } catch (err) {
+                    listEl.innerHTML = '<p class="empty-orders">権限情報の取得に失敗しました。</p>';
+                }
+            }
+
+            // Legacy toggleRole removed - now handled by select dropdown
+
+            // ══════════════════════════════════════
+            // 6. 売上分析
+            // ══════════════════════════════════════
+            function loadAnalytics() {
+                if (!allOrders.length) return;
+                const validOrders = allOrders.filter(o => o.status !== 'キャンセル');
+
+                // Build monthly data for last 12 months
+                const now = new Date();
+                const months = [];
+                for (let i = 11; i >= 0; i--) {
+                    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+                    months.push({ key: `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`, label: `${d.getMonth() + 1}月`, year: d.getFullYear(), month: d.getMonth() });
+                }
+
+                const monthlyData = {};
+                months.forEach(m => { monthlyData[m.key] = { revenue: 0, orders: 0, products: {} }; });
+
+                validOrders.forEach(o => {
+                    if (!o.createdAt) return;
+                    const d = new Date(o.createdAt.seconds * 1000);
+                    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+                    if (!monthlyData[key]) return;
+                    monthlyData[key].revenue += (o.total || 0);
+                    monthlyData[key].orders++;
+                    (o.items || []).forEach(item => {
+                        const name = item.name || '不明';
+                        if (!monthlyData[key].products[name]) monthlyData[key].products[name] = { qty: 0, revenue: 0 };
+                        monthlyData[key].products[name].qty += (item.qty || 0);
+                        monthlyData[key].products[name].revenue += ((item.price || 0) * (item.qty || 0));
+                    });
+                });
+
+                // Render bar chart
+                const maxRevenue = Math.max(...months.map(m => monthlyData[m.key].revenue), 1);
+                const chartEl = document.getElementById('monthly-chart');
+                const labelsEl = document.getElementById('monthly-labels');
+                chartEl.innerHTML = months.map(m => {
+                    const data = monthlyData[m.key];
+                    const pct = Math.max((data.revenue / maxRevenue) * 100, 2);
+                    const color = data.revenue > 0 ? (m.key === months[months.length - 1].key ? 'var(--primary)' : '#a78bfa') : '#e2e8f0';
+                    return `<div class="chart-bar-wrap" data-month="${m.key}" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;cursor:pointer;">
+                        <div style="font-size:0.58rem;color:var(--text-light);margin-bottom:2px;white-space:nowrap;">${data.revenue > 0 ? '¥' + Math.round(data.revenue / 1000) + 'k' : ''}</div>
+                        <div style="width:100%;max-width:32px;height:${pct}%;background:${color};border-radius:4px 4px 0 0;transition:height 0.5s ease,background 0.2s;min-height:3px;"></div>
+                    </div>`;
+                }).join('');
+                labelsEl.innerHTML = months.map(m =>
+                    `<div style="flex:1;text-align:center;font-size:0.6rem;color:var(--text-light);">${m.label}</div>`
+                ).join('');
+
+                // Click on chart bar to select month
+                chartEl.querySelectorAll('.chart-bar-wrap').forEach(bar => {
+                    bar.addEventListener('click', () => {
+                        document.getElementById('analytics-month').value = bar.dataset.month;
+                        renderMonthDetail(bar.dataset.month, monthlyData);
+                    });
+                });
+
+                // Month selector
+                const selectEl = document.getElementById('analytics-month');
+                selectEl.innerHTML = months.slice().reverse().map(m =>
+                    `<option value="${m.key}">${m.year}年${m.label}</option>`
+                ).join('');
+                selectEl.addEventListener('change', () => renderMonthDetail(selectEl.value, monthlyData));
+
+                // Show current month by default
+                renderMonthDetail(months[months.length - 1].key, monthlyData);
+
+                // Regional sales
+                renderRegionalSales(validOrders);
+            }
+
+            // Prefecture → Region mapping
+            const prefectureRegion = {
+                '北海道': '北海道', '青森': '東北', '岩手': '東北', '宮城': '東北', '秋田': '東北', '山形': '東北', '福島': '東北',
+                '茨城': '関東', '栃木': '関東', '群馬': '関東', '埼玉': '関東', '千葉': '関東', '東京': '関東', '神奈川': '関東',
+                '新潟': '中部', '富山': '中部', '石川': '中部', '福井': '中部', '山梨': '中部', '長野': '中部', '岐阜': '中部', '静岡': '中部', '愛知': '中部',
+                '三重': '近畿', '滋賀': '近畿', '京都': '近畿', '大阪': '近畿', '兵庫': '近畿', '奈良': '近畿', '和歌山': '近畿',
+                '鳥取': '中国', '島根': '中国', '岡山': '中国', '広島': '中国', '山口': '中国',
+                '徳島': '四国', '香川': '四国', '愛媛': '四国', '高知': '四国',
+                '福岡': '九州・沖縄', '佐賀': '九州・沖縄', '長崎': '九州・沖縄', '熊本': '九州・沖縄', '大分': '九州・沖縄', '宮崎': '九州・沖縄', '鹿児島': '九州・沖縄', '沖縄': '九州・沖縄'
+            };
+
+            function getRegionFromOrder(o) {
+                const addr = o.address || o.shippingAddress || {};
+                const text = addr.prefecture || addr.address || addr.line || o.address || '';
+                for (const [pref, region] of Object.entries(prefectureRegion)) {
+                    if (typeof text === 'string' && text.includes(pref)) return region;
+                }
+                return 'その他';
+            }
+
+            function renderRegionalSales(orders) {
+                const el = document.getElementById('regional-sales');
+                const regionData = {};
+                orders.forEach(o => {
+                    const region = getRegionFromOrder(o);
+                    if (!regionData[region]) regionData[region] = { revenue: 0, orders: 0 };
+                    regionData[region].revenue += (o.total || 0);
+                    regionData[region].orders++;
+                });
+
+                const sorted = Object.entries(regionData).sort((a, b) => b[1].revenue - a[1].revenue);
+                if (sorted.length === 0) { el.innerHTML = '<p class="empty-orders">発送データがありません。</p>'; return; }
+
+                const maxRev = sorted[0][1].revenue;
+                const totalRev = sorted.reduce((s, [, d]) => s + d.revenue, 0);
+
+                el.innerHTML = sorted.map(([region, d]) => {
+                    const pct = totalRev > 0 ? Math.round(d.revenue / totalRev * 100) : 0;
+                    const barW = Math.max((d.revenue / maxRev) * 100, 3);
+                    return `
+                    <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.5rem;">
+                        <span style="width:5.5rem;font-size:0.78rem;font-weight:500;text-align:right;flex-shrink:0;">${region}</span>
+                        <div style="flex:1;">
+                            <div style="height:20px;background:#edf2f7;border-radius:4px;overflow:hidden;">
+                                <div style="height:100%;width:${barW}%;background:linear-gradient(90deg,var(--primary),#a78bfa);border-radius:4px;transition:width 0.5s;display:flex;align-items:center;justify-content:flex-end;padding-right:4px;">
+                                    ${barW > 25 ? `<span style="font-size:0.6rem;color:#fff;font-weight:600;">${pct}%</span>` : ''}
+                                </div>
+                            </div>
+                        </div>
+                        <span style="width:5rem;font-size:0.72rem;color:var(--text-light);text-align:right;flex-shrink:0;">¥${d.revenue.toLocaleString()}</span>
+                        <span style="width:2.5rem;font-size:0.68rem;color:var(--text-light);text-align:right;flex-shrink:0;">${d.orders}件</span>
+                    </div>`;
+                }).join('');
+            }
+
+            function renderMonthDetail(monthKey, monthlyData) {
+                const data = monthlyData[monthKey] || { revenue: 0, orders: 0, products: {} };
+                const avg = data.orders > 0 ? Math.round(data.revenue / data.orders) : 0;
+
+                // Summary cards
+                document.getElementById('month-summary').innerHTML = `
+                    <div style="background:#f7fafc;border-radius:8px;padding:0.6rem;text-align:center;">
+                        <div style="font-size:1.1rem;font-weight:700;color:var(--primary);">¥${data.revenue.toLocaleString()}</div>
+                        <div style="font-size:0.68rem;color:var(--text-light);">売上</div>
+                    </div>
+                    <div style="background:#f7fafc;border-radius:8px;padding:0.6rem;text-align:center;">
+                        <div style="font-size:1.1rem;font-weight:700;color:var(--text-dark);">${data.orders}</div>
+                        <div style="font-size:0.68rem;color:var(--text-light);">注文数</div>
+                    </div>
+                    <div style="background:#f7fafc;border-radius:8px;padding:0.6rem;text-align:center;">
+                        <div style="font-size:1.1rem;font-weight:700;color:var(--text-dark);">¥${avg.toLocaleString()}</div>
+                        <div style="font-size:0.68rem;color:var(--text-light);">平均単価</div>
+                    </div>`;
+
+                // Product ranking
+                const rankEl = document.getElementById('month-product-ranking');
+                const prods = Object.entries(data.products)
+                    .map(([name, d]) => ({ name, ...d }))
+                    .sort((a, b) => b.qty - a.qty);
+
+                if (prods.length === 0) {
+                    rankEl.innerHTML = '<p class="empty-orders">この月の販売データはありません。</p>';
+                    return;
+                }
+                const maxQty = prods[0].qty;
+                rankEl.innerHTML = prods.slice(0, 20).map((p, i) => {
+                    const barPct = Math.max((p.qty / maxQty) * 100, 5);
+                    const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i + 1}.`;
+                    return `
+                    <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.4rem;">
+                        <span style="width:1.5rem;text-align:center;font-size:0.75rem;">${medal}</span>
+                        <div style="flex:1;">
+                            <div style="display:flex;justify-content:space-between;font-size:0.78rem;">
+                                <span style="font-weight:500;">${p.name}</span>
+                                <span style="color:var(--text-light);">${p.qty}個 / ¥${p.revenue.toLocaleString()}</span>
+                            </div>
+                            <div style="height:4px;background:#edf2f7;border-radius:2px;margin-top:2px;">
+                                <div style="height:100%;width:${barPct}%;background:linear-gradient(90deg,var(--primary),#a78bfa);border-radius:2px;transition:width 0.4s;"></div>
+                            </div>
+                        </div>
+                    </div>`;
+                }).join('');
+            }
+
+            // ── Init ──
+            loadProducts();
+            loadCustomers();
+            loadOrders().then(() => loadAnalytics());
+            loadAccount();
+            loadPermissions();
+        });
+    </script>
+</body>
+
+</html>

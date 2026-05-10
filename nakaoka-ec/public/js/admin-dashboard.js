@@ -504,6 +504,17 @@ const AdminDashboard = {
     try {
       submitBtn.disabled = true;
 
+      const lineChannelAccessToken = document.getElementById('line-channel-access-token')?.value.trim() || '';
+      const lineUserId = document.getElementById('line-user-id')?.value.trim() || '';
+
+      if (lineUserId && !/^U[0-9a-fA-F]{32}$/.test(lineUserId)) {
+        throw new Error('送信先ユーザーIDの形式が不正です。Uから始まる33文字で入力してください。');
+      }
+
+      if ((lineChannelAccessToken && !lineUserId) || (!lineChannelAccessToken && lineUserId)) {
+        throw new Error('LINE設定はトークンとユーザーIDをセットで入力してください。');
+      }
+
       const settingsData = {
         siteName: document.getElementById('site-name').value.trim(),
         siteDescription: document.getElementById('site-description').value.trim(),
@@ -512,8 +523,8 @@ const AdminDashboard = {
         secondaryColor: document.getElementById('secondary-color').value,
         shippingFee: parseInt(document.getElementById('shipping-fee').value) || 0,
         freeShippingThreshold: parseInt(document.getElementById('free-shipping-threshold').value) || 10000,
-        lineChannelAccessToken: document.getElementById('line-channel-access-token')?.value.trim() || '',
-        lineUserId: document.getElementById('line-user-id')?.value.trim() || '',
+        lineChannelAccessToken,
+        lineUserId,
         updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
       };
 
@@ -550,7 +561,7 @@ const AdminDashboard = {
       document.getElementById('shipping-fee').value = config.shippingFee || 0;
       document.getElementById('free-shipping-threshold').value = config.freeShippingThreshold || 10000;
       
-      // LINE Notify トークン
+      // LINE Messaging API 設定
       const lineChannelTokenEl = document.getElementById('line-channel-access-token');
       if (lineChannelTokenEl) lineChannelTokenEl.value = config.lineChannelAccessToken || '';
       const lineUserIdEl = document.getElementById('line-user-id');

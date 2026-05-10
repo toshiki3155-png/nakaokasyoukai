@@ -402,10 +402,6 @@
 
             async function enqueueLineNotification(orderId, orderData) {
                 try {
-                    const configSnap = await db.collection('config').doc('site').get();
-                    const config = configSnap.exists ? configSnap.data() : {};
-                    if (!config.lineChannelAccessToken || !config.lineUserId) return;
-
                     const itemsText = orderData.items
                         .map(i => `・${i.name} × ${i.qty} = ¥${(i.price * i.qty).toLocaleString()}`)
                         .join('\n');

@@ -608,6 +608,23 @@
                         </div>
                     </div>
 
+                    <details style="margin-top: 0.8rem; border: 1px solid var(--border-light); border-radius: 10px; padding: 0.8rem 1rem; background: #fafbfc;">
+                        <summary style="cursor: pointer; font-weight: 700; color: var(--text-dark);">取得手順を開く（LINE Messaging API）</summary>
+                        <ol style="margin: 0.8rem 0 0 1.2rem; color: var(--text-main); line-height: 1.7;">
+                            <li>LINE Developers にログインし、Provider と Messaging API チャネルを作成します。</li>
+                            <li>Messaging API 設定でチャネルアクセストークン（長期）を発行し、上の Channel Access Token に貼り付けます。</li>
+                            <li>チャネルの Basic settings 画面で Your user ID を確認し、上の送信先ユーザーIDに貼り付けます（Uで始まるID）。</li>
+                            <li>通知先アカウントで公式アカウントを友だち追加し、必要に応じて1回メッセージを送信します。</li>
+                            <li>設定保存後、テスト注文を1件作成し、通知管理タブで pending から sent に変わることを確認します。</li>
+                        </ol>
+                        <div style="margin-top: 0.7rem; font-size: 0.82rem; color: #b45309;">
+                            補足: LINE Notify はサービス終了済みのため、このシステムは LINE Messaging API のみ利用します。
+                        </div>
+                        <div style="margin-top: 0.6rem; font-size: 0.82rem;">
+                            <a href="https://developers.line.biz/console/" target="_blank" rel="noopener">LINE Developers Console を開く</a>
+                        </div>
+                    </details>
+
                     <div id="settings-success" class="message"></div>
                     <div id="settings-error" class="message"></div>
 

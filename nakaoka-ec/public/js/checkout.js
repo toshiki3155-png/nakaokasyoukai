@@ -2,17 +2,9 @@
  * Checkout — Order submission to Firestore (with Auth)
  */
 
-// LINE Notify 通知送信（非同期）
+// LINE Messaging API 通知キュー送信（非同期）
 async function notifyLineOrder(orderId, orderData) {
   try {
-    const config = await db.collection('config').doc('site').get();
-    const configData = config.exists ? config.data() : {};
-
-        if (!configData.lineChannelAccessToken || !configData.lineUserId) {
-            console.log('LINE Messaging API 設定が未完了です');
-      return;
-    }
-
     // メッセージを作成
     const itemsText = orderData.items
       .map(i => `・${i.name} × ${i.qty} = ¥${(i.price * i.qty).toLocaleString()}`)

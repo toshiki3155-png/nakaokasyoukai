@@ -7,15 +7,21 @@ const db = admin.firestore();
 
 /**
  * LINE Messaging API Push Message トリガー
- * lineNotifications コレクションへの書き込みで自動実行
+ * lineNotifications の新規作成、または status が pending に更新された時に実行
  */
 exports.sendLineMessage = functions.region('asia-northeast1').firestore
   .document('lineNotifications/{docId}')
-  .onCreate(async (snap, context) => {
-    const data = snap.data();
-    const docRef = snap.ref;
+  .onWrite(async (change, context) => {
+    if (!change.after.exists) return;
+
+    const data = change.after.data();
+    const docRef = change.after.ref;
+    const beforeStatus = change.before.exists ? change.before.data().status : null;
+    const beforeRetryCount = change.before.exists ? (change.before.data().retryCount || 0) : 0;
+    const afterRetryCount = data.retryCount || 0;
 
     if (data.status !== 'pending') return;
+    if (beforeStatus === 'pending' && beforeRetryCount === afterRetryCount) return;
 
     // Firestore の config/site からトークンを取得
     const configSnap = await db.collection('config').doc('site').get();

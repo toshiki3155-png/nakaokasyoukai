@@ -52,5 +52,24 @@ service cloud.firestore {
       allow update: if isAdmin();
       allow delete: if false;
     }
+
+    // ────────────────────────────────────────────
+    // サイト設定:
+    //   管理者のみ読み書き可（LINEトークンを含むため）
+    // ────────────────────────────────────────────
+    match /config/{configId} {
+      allow read, write: if isAdmin();
+    }
+
+    // ────────────────────────────────────────────
+    // LINE通知キュー:
+    //   認証ユーザー → 作成可
+    //   管理者 → 閲覧・更新可
+    // ────────────────────────────────────────────
+    match /lineNotifications/{docId} {
+      allow create: if request.auth != null;
+      allow read, update: if isAdmin();
+      allow delete: if false;
+    }
   }
 }
